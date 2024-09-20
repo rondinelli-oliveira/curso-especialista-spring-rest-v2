@@ -22,7 +22,7 @@ public class StateRepositoryImpl implements StateRepository {
 
 	@Override
 	public State findById(Long id) {
-		return null;
+		return manager.find(State.class, id);
 	}
 
 	@Override

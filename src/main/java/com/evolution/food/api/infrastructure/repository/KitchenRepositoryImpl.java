@@ -22,7 +22,7 @@ public class KitchenRepositoryImpl implements KitchenRepository {
 
 	@Override
 	public Kitchen findById(Long id) {
-		return null;
+		return manager.find(Kitchen.class, id);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import com.evolution.food.api.domain.repository.KitchenRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,23 +23,20 @@ public class KitchenController {
         this.kitchenRepository = kitchenRepository;
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public List<Kitchen> findAll() {
     	List<Kitchen> kitchens = kitchenRepository.findAll();
     	for(Kitchen kitchen: kitchens) {
             log.info("Nome da cozinha de codigo: {} e {}", kitchen.getId(), kitchen.getName());
-            log.info("Content application/json");
     	}
         return kitchenRepository.findAll();
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-    public List<Kitchen> findAll1() {
-    	List<Kitchen> kitchens = kitchenRepository.findAll();
-    	for(Kitchen kitchen: kitchens) {
-            log.info("Nome da cozinha de codigo: {} e {}", kitchen.getId(), kitchen.getName());
-            log.info("Content application/xml");
-    	}
-        return kitchenRepository.findAll();
+    @GetMapping("/{id}")
+    public Kitchen findById(@PathVariable Long id) {
+    	Kitchen kitchen = kitchenRepository.findById(id);
+        log.info("Pesquisando cozinha pelo codigo: {} ", id);
+        log.info("Nome da cozinha: {}", kitchen.getName());
+        return kitchenRepository.findById(id);
     }
 }
