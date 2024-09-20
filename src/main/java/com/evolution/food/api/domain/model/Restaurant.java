@@ -21,4 +21,7 @@ public class Restaurant {
     @Column(name = "freigth_rate")
     private BigDecimal freightRate;
 
+    @ManyToOne
+    private Kitchen kitchen;
+
 }

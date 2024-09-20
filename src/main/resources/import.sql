@@ -1,2 +1,6 @@
-insert into kitchen (name) values ('Tailandesa')
-insert into kitchen (name) values ('Indiana')
+insert into kitchen (id, name) values (1, 'Tailandesa')
+insert into kitchen (id, name) values (2, 'Indiana')
+
+insert into restaurant (name, freigth_rate, kitchen_id) values ('Thai Gourmet', 10, 1);
+insert into restaurant (name, freigth_rate, kitchen_id) values ('Thai Delivery', 9.50, 1);
+insert into restaurant (name, freigth_rate, kitchen_id) values ('Tuk Tuk Comida Indiana', 15, 2);
