@@ -4,7 +4,7 @@ import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.KitchenXmlWrapper;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -55,5 +55,18 @@ public class KitchenController {
     public Kitchen add(@RequestBody Kitchen kitchen) {
         log.info("Persistindo cozinha de nome: {}", kitchen.getName());
         return kitchenRepository.save(kitchen);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Kitchen> update(@PathVariable Long id, @RequestBody Kitchen kitchen) {
+        Kitchen currentKitchen = kitchenRepository.findById(id);
+
+        if (null != currentKitchen) {
+//            currentKitchen.setName(kitchen.getName());
+            BeanUtils.copyProperties(kitchen, currentKitchen, "id");
+            kitchenRepository.save(currentKitchen);
+            return ResponseEntity.ok(currentKitchen);
+        }
+        return ResponseEntity.notFound().build();
     }
 }
