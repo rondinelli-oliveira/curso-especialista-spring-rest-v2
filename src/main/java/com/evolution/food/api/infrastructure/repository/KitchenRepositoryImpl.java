@@ -4,6 +4,7 @@ import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +35,12 @@ public class KitchenRepositoryImpl implements KitchenRepository {
 
 	@Transactional
 	@Override
-	public void remove(Kitchen kitchen) {
-		kitchen = findById(kitchen.getId());
+	public void remove(Long id) {
+		Kitchen kitchen = findById(id);
+
+		if (null == kitchen) {
+			throw new EmptyResultDataAccessException(1);
+		}
 		manager.remove(kitchen);
 	}
 }

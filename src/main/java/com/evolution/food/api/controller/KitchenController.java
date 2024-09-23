@@ -1,13 +1,13 @@
 package com.evolution.food.api.controller;
 
+import com.evolution.food.api.domain.exception.EntityInUseException;
+import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.KitchenXmlWrapper;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import com.evolution.food.api.domain.service.KitchenService;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -79,15 +79,12 @@ public class KitchenController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Kitchen> remove(@PathVariable Long id) {
         try {
-            Kitchen kitchen = kitchenRepository.findById(id);
-
-            if (null != kitchen) {
-                log.info("Deletando cozinha de codigo: {}", kitchen.getId());
-                kitchenRepository.remove(kitchen);
-                return ResponseEntity.noContent().build();
-            }
+            kitchenService.remove(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (DataIntegrityViolationException e) {
+
+        } catch (EntityInUseException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
