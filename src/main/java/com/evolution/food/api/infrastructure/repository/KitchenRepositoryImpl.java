@@ -5,6 +5,7 @@ import com.evolution.food.api.domain.repository.KitchenRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,9 +26,10 @@ public class KitchenRepositoryImpl implements KitchenRepository {
 		return manager.find(Kitchen.class, id);
 	}
 
+	@Transactional
 	@Override
 	public Kitchen save(Kitchen kitchen) {
-		return null;
+		return manager.merge(kitchen);
 	}
 
 	@Override

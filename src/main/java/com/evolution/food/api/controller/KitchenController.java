@@ -47,7 +47,13 @@ public class KitchenController {
             return ResponseEntity.status(HttpStatus.OK).body(kitchen);
         }
 
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Kitchen add(@RequestBody Kitchen kitchen) {
+        log.info("Persistindo cozinha de nome: {}", kitchen.getName());
+        return kitchenRepository.save(kitchen);
     }
 }
