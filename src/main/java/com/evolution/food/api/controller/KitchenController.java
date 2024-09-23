@@ -40,18 +40,14 @@ public class KitchenController {
     @GetMapping("/{id}")
     public ResponseEntity<Kitchen> findById(@PathVariable Long id) {
     	Kitchen kitchen = kitchenRepository.findById(id);
-        log.info("Pesquisando cozinha pelo codigo: {} ", id);
-        log.info("Nome da cozinha: {}", kitchen.getName());
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.LOCATION, "http://localhost:8080/kitchens");
+        if (null != kitchen ) {
+            log.info("Pesquisando cozinha pelo codigo: {} ", id);
+            log.info("Nome da cozinha: {}", kitchen.getName());
+            return ResponseEntity.status(HttpStatus.OK).body(kitchen);
+        }
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .headers(httpHeaders)
-                .build();
-//        return ResponseEntity.status(HttpStatus.OK).body(kitchen);
-//        return ResponseEntity.status(HttpStatus.OK).build();
-//        return ResponseEntity.ok().build();
-//        return ResponseEntity.ok(kitchen);
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.notFound().build();
     }
 }
