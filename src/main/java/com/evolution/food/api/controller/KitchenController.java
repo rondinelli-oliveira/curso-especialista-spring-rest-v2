@@ -3,7 +3,9 @@ package com.evolution.food.api.controller;
 import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.KitchenXmlWrapper;
 import com.evolution.food.api.domain.repository.KitchenRepository;
+import com.evolution.food.api.domain.service.KitchenService;
 import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -15,13 +17,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/kitchens")
-@Log4j2
+@Slf4j
 public class KitchenController {
 
     private final KitchenRepository kitchenRepository;
 
-    public KitchenController(KitchenRepository kitchenRepository) {
+    private final KitchenService kitchenService;
+
+    public KitchenController(KitchenRepository kitchenRepository, KitchenService kitchenService) {
         this.kitchenRepository = kitchenRepository;
+        this.kitchenService = kitchenService;
     }
 
     @GetMapping
@@ -54,8 +59,7 @@ public class KitchenController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Kitchen add(@RequestBody Kitchen kitchen) {
-        log.info("Persistindo cozinha de nome: {}", kitchen.getName());
-        return kitchenRepository.save(kitchen);
+        return kitchenService.save(kitchen);
     }
 
     @PutMapping("/{id}")
