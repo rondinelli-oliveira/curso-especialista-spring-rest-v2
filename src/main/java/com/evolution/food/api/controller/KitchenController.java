@@ -1,6 +1,7 @@
 package com.evolution.food.api.controller;
 
 import com.evolution.food.api.domain.model.Kitchen;
+import com.evolution.food.api.domain.model.KitchenXmlWrapper;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.*;
 import java.util.List;
 
 @RestController
@@ -30,6 +30,11 @@ public class KitchenController {
             log.info("Nome da cozinha de codigo: {} e {}", kitchen.getId(), kitchen.getName());
     	}
         return kitchenRepository.findAll();
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+    public KitchenXmlWrapper findAllXml() {
+        return new KitchenXmlWrapper(kitchenRepository.findAll());
     }
 
     @GetMapping("/{id}")
