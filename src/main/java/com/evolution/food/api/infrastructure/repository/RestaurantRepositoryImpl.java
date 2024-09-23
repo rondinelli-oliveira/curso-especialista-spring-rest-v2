@@ -5,6 +5,7 @@ import com.evolution.food.api.domain.repository.RestaurantRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,9 +26,10 @@ public class RestaurantRepositoryImpl implements RestaurantRepository {
 		return manager.find(Restaurant.class, id);
 	}
 
+	@Transactional
 	@Override
 	public Restaurant save(Restaurant restaurant) {
-		return null;
+		return manager.merge(restaurant);
 	}
 
 	@Override

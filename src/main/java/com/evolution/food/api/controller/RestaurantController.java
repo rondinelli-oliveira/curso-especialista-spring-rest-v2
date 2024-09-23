@@ -1,13 +1,14 @@
 package com.evolution.food.api.controller;
 
+import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
+import com.evolution.food.api.domain.service.RestaurantService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,8 +19,11 @@ public class RestaurantController {
 
     private final RestaurantRepository restaurantRepository;
 
-    public RestaurantController(RestaurantRepository restaurantRepository) {
+    private final RestaurantService restaurantService;
+
+    public RestaurantController(RestaurantRepository restaurantRepository, RestaurantService restaurantService) {
         this.restaurantRepository = restaurantRepository;
+        this.restaurantService = restaurantService;
     }
 
     @GetMapping
@@ -41,5 +45,18 @@ public class RestaurantController {
             return ResponseEntity.ok(restaurant);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> add(@RequestBody Restaurant restaurant) {
+        try {
+            restaurantService.save(restaurant);
+            return  ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
+
     }
 }
