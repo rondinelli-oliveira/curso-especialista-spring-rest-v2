@@ -4,8 +4,10 @@ import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.KitchenXmlWrapper;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,12 +37,21 @@ public class KitchenController {
         return new KitchenXmlWrapper(kitchenRepository.findAll());
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @GetMapping("/{id}")
-    public Kitchen findById(@PathVariable Long id) {
+    public ResponseEntity<Kitchen> findById(@PathVariable Long id) {
     	Kitchen kitchen = kitchenRepository.findById(id);
         log.info("Pesquisando cozinha pelo codigo: {} ", id);
         log.info("Nome da cozinha: {}", kitchen.getName());
-        return kitchenRepository.findById(id);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.LOCATION, "http://localhost:8080/kitchens");
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .headers(httpHeaders)
+                .build();
+//        return ResponseEntity.status(HttpStatus.OK).body(kitchen);
+//        return ResponseEntity.status(HttpStatus.OK).build();
+//        return ResponseEntity.ok().build();
+//        return ResponseEntity.ok(kitchen);
     }
 }
