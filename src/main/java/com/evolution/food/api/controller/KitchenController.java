@@ -4,11 +4,9 @@ import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.KitchenXmlWrapper;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,6 +35,7 @@ public class KitchenController {
         return new KitchenXmlWrapper(kitchenRepository.findAll());
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @GetMapping("/{id}")
     public Kitchen findById(@PathVariable Long id) {
     	Kitchen kitchen = kitchenRepository.findById(id);
