@@ -2,7 +2,7 @@ package com.evolution.food.api.controller;
 
 import com.evolution.food.api.domain.model.State;
 import com.evolution.food.api.domain.repository.StateRepository;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/states")
-@Log4j2
+@Slf4j
 public class StateController {
 
     private final StateRepository stateRepository;

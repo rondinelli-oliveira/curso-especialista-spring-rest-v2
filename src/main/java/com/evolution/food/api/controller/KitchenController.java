@@ -3,13 +3,11 @@ package com.evolution.food.api.controller;
 import com.evolution.food.api.domain.exception.EntityInUseException;
 import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.Kitchen;
-import com.evolution.food.api.domain.model.KitchenXmlWrapper;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import com.evolution.food.api.domain.service.KitchenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +34,6 @@ public class KitchenController {
             log.info("Nome da cozinha de codigo: {} e {}", kitchen.getId(), kitchen.getName());
     	}
         return kitchenRepository.findAll();
-    }
-
-    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-    public KitchenXmlWrapper findAllXml() {
-        return new KitchenXmlWrapper(kitchenRepository.findAll());
     }
 
     @GetMapping("/{id}")
@@ -70,7 +63,7 @@ public class KitchenController {
             log.info("Atualizando cozinha de codigo: {} e nome {}, para {}", currentKitchen.getId(), currentKitchen.getName(),
                     kitchen.getName());
             BeanUtils.copyProperties(kitchen, currentKitchen, "id");
-            kitchenRepository.save(currentKitchen);
+            kitchenService.save(currentKitchen);
             return ResponseEntity.ok(currentKitchen);
         }
         return ResponseEntity.notFound().build();
