@@ -63,6 +63,8 @@ public class KitchenController {
 
         if (null != currentKitchen) {
 //            currentKitchen.setName(kitchen.getName());
+            log.info("Atualizando cozinha de codigo: {} e nome {}, para {}", currentKitchen.getId(), currentKitchen.getName(),
+                    kitchen.getName());
             BeanUtils.copyProperties(kitchen, currentKitchen, "id");
             kitchenRepository.save(currentKitchen);
             return ResponseEntity.ok(currentKitchen);
