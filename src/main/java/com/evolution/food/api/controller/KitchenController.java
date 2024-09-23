@@ -5,6 +5,7 @@ import com.evolution.food.api.domain.model.KitchenXmlWrapper;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,6 @@ public class KitchenController {
         Kitchen currentKitchen = kitchenRepository.findById(id);
 
         if (null != currentKitchen) {
-//            currentKitchen.setName(kitchen.getName());
             log.info("Atualizando cozinha de codigo: {} e nome {}, para {}", currentKitchen.getId(), currentKitchen.getName(),
                     kitchen.getName());
             BeanUtils.copyProperties(kitchen, currentKitchen, "id");
@@ -71,4 +71,21 @@ public class KitchenController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Kitchen> remove(@PathVariable Long id) {
+        try {
+            Kitchen kitchen = kitchenRepository.findById(id);
+
+            if (null != kitchen) {
+                log.info("Deletando cozinha de codigo: {}", kitchen.getId());
+                kitchenRepository.remove(kitchen);
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+
 }

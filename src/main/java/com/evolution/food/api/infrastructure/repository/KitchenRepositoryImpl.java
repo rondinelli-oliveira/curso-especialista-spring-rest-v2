@@ -32,8 +32,10 @@ public class KitchenRepositoryImpl implements KitchenRepository {
 		return manager.merge(kitchen);
 	}
 
+	@Transactional
 	@Override
 	public void remove(Kitchen kitchen) {
-
+		kitchen = findById(kitchen.getId());
+		manager.remove(kitchen);
 	}
 }
