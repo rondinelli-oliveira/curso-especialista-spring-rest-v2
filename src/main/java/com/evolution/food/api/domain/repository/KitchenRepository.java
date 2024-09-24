@@ -7,6 +7,7 @@ import java.util.List;
 public interface KitchenRepository {
 
 	List<Kitchen> findAll();
+	List<Kitchen> findByName(String name);
 	Kitchen findById(Long id);
 	Kitchen save(Kitchen kitchen);
 	void remove(Long id);

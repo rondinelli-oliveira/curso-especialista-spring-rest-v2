@@ -5,12 +5,12 @@ import com.evolution.food.api.domain.repository.KitchenRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
+@Repository
 public class KitchenRepositoryImpl implements KitchenRepository {
 
 	@PersistenceContext
@@ -19,6 +19,13 @@ public class KitchenRepositoryImpl implements KitchenRepository {
 	@Override
 	public List<Kitchen> findAll() {
 		return manager.createQuery("from Kitchen", Kitchen.class)
+				.getResultList();
+	}
+
+	@Override
+	public List<Kitchen> findByName(String name) {
+		return manager.createQuery("from Kitchen where name like :name", Kitchen.class)
+				.setParameter("name", "%" + name + "%")
 				.getResultList();
 	}
 
