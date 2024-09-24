@@ -3,13 +3,16 @@ package com.evolution.food.api.controller;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
 import com.evolution.food.api.domain.service.RestaurantService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -93,9 +96,18 @@ public class RestaurantController {
         return update(id, currentRestaurant);
     }
 
-    private static void merge(Map<String, Object> originFefields, Restaurant destinationFields) {
-        originFefields.forEach((attributeName, attributeValue)-> {
-            log.info(attributeName + " = " + attributeValue);
+    private static void merge(Map<String, Object> originFields, Restaurant destinationFields) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Restaurant originRestaurant = objectMapper.convertValue(originFields, Restaurant.class);
+
+        originFields.forEach((attributeName, attributeValue)-> {
+
+            Field field = ReflectionUtils.findField(Restaurant.class, attributeName);
+            field.setAccessible(true);
+
+            Object newValue = ReflectionUtils.getField(field, originRestaurant);
+
+            ReflectionUtils.setField(field, destinationFields, newValue);
         });
     }
 
