@@ -12,6 +12,8 @@ public interface KitchenRepository extends JpaRepository<Kitchen, Long> {
 
 	List<Kitchen> findAllByName(String name);
 
+	List<Kitchen> findAllByNameContaining(String name);
+
     Optional<Kitchen> findByName(String name);
 
 }
