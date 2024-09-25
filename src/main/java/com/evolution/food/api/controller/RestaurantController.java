@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/restaurants")
@@ -41,12 +42,12 @@ public class RestaurantController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Restaurant> findById(@PathVariable Long id) {
-        Restaurant restaurant = restaurantRepository.findById(id);
+        Optional<Restaurant> restaurant = restaurantRepository.findById(id);
 
-        if (null != restaurant) {
+        if (restaurant.isPresent()) {
             log.info("Pesquisando restaurante com codigo: {}", id);
-            log.info("Nome do restaurante  {}", restaurant.getName());
-            return ResponseEntity.ok(restaurant);
+            log.info("Nome do restaurante  {}", restaurant.get().getName());
+            return ResponseEntity.ok(restaurant.get());
         }
         return ResponseEntity.notFound().build();
     }
@@ -68,7 +69,7 @@ public class RestaurantController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
         try {
-            Restaurant currentRestaurant = restaurantRepository.findById(id);
+            Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
 
             if (null != currentRestaurant) {
                 log.info("Atualizando restaurante de codigo: {} e nome {}, para {}", currentRestaurant.getId(), currentRestaurant.getName(),
@@ -86,7 +87,7 @@ public class RestaurantController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> partialUpdate(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
-            Restaurant currentRestaurant = restaurantRepository.findById(id);
+            Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
 
             if (null == currentRestaurant) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

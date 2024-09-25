@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/states")
@@ -38,12 +39,12 @@ public class StateController {
 
     @GetMapping("/{id}")
     public ResponseEntity<State> findById(@PathVariable Long id) {
-        State state = stateRepository.findById(id);
+        Optional<State> state = stateRepository.findById(id);
 
-        if (null != state) {
+        if (state.isPresent()) {
             log.info("Pesquisando estado com codigo: {}", id);
-            log.info("Nome do estado  {}", state.getName());
-            return ResponseEntity.ok(state);
+            log.info("Nome do estado  {}", state.get().getName());
+            return ResponseEntity.ok(state.get());
         }
 
         return ResponseEntity.notFound().build();
@@ -57,14 +58,14 @@ public class StateController {
 
     @PutMapping("/{id}")
     public ResponseEntity<State> update(@PathVariable Long id, @RequestBody State state) {
-        State currentState = stateRepository.findById(id);
+        State currentState = stateRepository.findById(id).orElse(null);
 
         if (null != currentState) {
             log.info("Atualizando estado de codigo: {} e nome {}, para {}", currentState.getId(), currentState.getName(),
                     state.getName());
             BeanUtils.copyProperties(state, currentState, "id");
-            stateService.save(currentState);
-            return ResponseEntity.ok().build();
+            currentState = stateService.save(currentState);
+            return ResponseEntity.ok().body(currentState);
         }
 
         return ResponseEntity.notFound().build();

@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cities")
@@ -38,12 +39,12 @@ public class CityController {
 
     @GetMapping("/{id}")
     public ResponseEntity<City> findById(@PathVariable Long id) {
-        City city = cityRepository.findById(id);
+        Optional<City> city = cityRepository.findById(id);
 
-        if (null != city) {
+        if (city.isPresent()) {
             log.info("Pesquisando cidade pelo codigo: {}", id);
-            log.info("Nome da cidade {}", city.getName());
-            return ResponseEntity.ok(city);
+            log.info("Nome da cidade {}", city.get().getName());
+            return ResponseEntity.ok(city.get());
         }
         return ResponseEntity.notFound().build();
     }
@@ -65,7 +66,7 @@ public class CityController {
     public ResponseEntity<?> update(@PathVariable Long id,
                                        @RequestBody City city) {
         try {
-            City currentCity = cityRepository.findById(id);
+            City currentCity = cityRepository.findById(id).orElse(null);
 
             if (currentCity != null) {
                 log.info("Atualizando cidade de codigo: {} e nome {}, para {}", currentCity.getId(), currentCity.getName(),

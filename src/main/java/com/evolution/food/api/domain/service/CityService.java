@@ -8,8 +8,9 @@ import com.evolution.food.api.domain.repository.CityRepository;
 import com.evolution.food.api.domain.repository.StateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -27,12 +28,9 @@ public class CityService {
     public City save(City city) {
         log.info("Persistindo cidade de nome: {}", city.getName());
         Long stataId = city.getState().getId();
-        State state = stateRepository.findById(stataId);
-
-        if (state == null) {
-            throw new EntityNotFoundException(
-                    String.format("Não existe cadastro de estado com código %d", stataId));
-        }
+        State state = stateRepository.findById(stataId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Não existe cadastro de estado com código %d", stataId)));
 
         city.setState(state);
 
@@ -42,11 +40,11 @@ public class CityService {
     public void remove(Long id) {
         try {
             log.info("Deletando cidade de codigo: {}", id);
-            cityRepository.remove(id);
-
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException(
-                    String.format("Nao existe um cadastro de city com codigo %d", id));
+            if (!cityRepository.existsById(id)) {
+                throw new EntityNotFoundException(
+                        String.format("Nao existe cadastro de cidade com codigo: %d ", id));
+            }
+            cityRepository.deleteById(id);
 
         } catch (DataIntegrityViolationException e) {
             throw new EntityInUseException(

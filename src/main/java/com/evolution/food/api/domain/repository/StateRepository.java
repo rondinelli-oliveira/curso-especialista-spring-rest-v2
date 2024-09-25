@@ -1,14 +1,10 @@
 package com.evolution.food.api.domain.repository;
 
 import com.evolution.food.api.domain.model.State;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+@Repository
+public interface StateRepository extends JpaRepository<State, Long> {
 
-public interface StateRepository {
-
-	List<State> findAll();
-	State findById(Long id);
-	State save(State state);
-	void remove(Long id);
-	
 }
