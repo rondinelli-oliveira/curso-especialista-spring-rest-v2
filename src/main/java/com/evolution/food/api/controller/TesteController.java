@@ -48,6 +48,11 @@ public class TesteController {
         return restaurantRepository.findByFreightRateBetween(initialFreightRate, finalFreightRate);
     }
 
+    @GetMapping("/restaurantes/for-name")
+    public List<Restaurant> findForName(String name, Long id) {
+        return restaurantRepository.findForName(name, id);
+    }
+
     @GetMapping("/restaurantes/by-name")
     public List<Restaurant> findByNameContainingAndKitchenId(String name, Long id) {
         return restaurantRepository.findByNameContainingAndKitchenId(name, id);
