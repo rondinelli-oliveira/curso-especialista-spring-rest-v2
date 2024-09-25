@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RestaurantRepository  extends JpaRepository<Restaurant, Long> {
+public interface RestaurantRepository  extends JpaRepository<Restaurant, Long>, RestaurantRepositoryQueries {
 
     List<Restaurant> findByFreightRateBetween(BigDecimal initialFreightRate, BigDecimal finalFreightRate);
 
