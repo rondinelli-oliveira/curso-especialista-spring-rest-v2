@@ -16,8 +16,8 @@ public class TesteController {
         this.kitchenRepository = kitchenRepository;
     }
 
-    @GetMapping("/kitchens/by-name")
-    public List<Kitchen> kitchensByName(@RequestParam("name") String name) {
-        return kitchenRepository.findByName(name);
-    }
+//    @GetMapping("/kitchens/by-name")
+//    public List<Kitchen> kitchensByName(@RequestParam("name") String name) {
+//        return kitchenRepository.findByName(name);
+//    }
 }

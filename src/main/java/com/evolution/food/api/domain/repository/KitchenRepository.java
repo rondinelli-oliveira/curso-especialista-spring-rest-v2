@@ -1,15 +1,12 @@
 package com.evolution.food.api.domain.repository;
 
 import com.evolution.food.api.domain.model.Kitchen;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
+@Repository
+public interface KitchenRepository extends JpaRepository<Kitchen, Long> {
 
-public interface KitchenRepository {
+//	List<Kitchen> findByName(String name);
 
-	List<Kitchen> findAll();
-	List<Kitchen> findByName(String name);
-	Kitchen findById(Long id);
-	Kitchen save(Kitchen kitchen);
-	void remove(Long id);
-	
 }

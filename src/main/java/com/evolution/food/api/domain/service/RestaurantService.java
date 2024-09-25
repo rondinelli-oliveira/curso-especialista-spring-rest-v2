@@ -24,11 +24,10 @@ public class RestaurantService {
     public Restaurant save(Restaurant restaurant) {
         log.info("Persistindo restaurante de nome: {}", restaurant.getName());
         Long kitchenId = restaurant.getKitchen().getId();
-        Kitchen kitchen = kitchenRepository.findById(kitchenId);
-        if (null == kitchen) {
-            throw new EntityNotFoundException(
-                    String.format("Nao existe cadastro de cozinha com codigo: %d ", kitchenId));
-        }
+        Kitchen kitchen = kitchenRepository.findById(kitchenId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                    String.format("Nao existe cadastro de cozinha com codigo: %d ", kitchenId)));
+
         restaurant.setKitchen(kitchen);
         return restaurantRepository.save(restaurant);
     }

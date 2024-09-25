@@ -56,7 +56,8 @@ public class RestaurantController {
     public ResponseEntity<?> add(@RequestBody Restaurant restaurant) {
         try {
             restaurantService.save(restaurant);
-            return  ResponseEntity.status(HttpStatus.CREATED).build();
+            return  ResponseEntity.status(HttpStatus.CREATED)
+                    .body(restaurant);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
