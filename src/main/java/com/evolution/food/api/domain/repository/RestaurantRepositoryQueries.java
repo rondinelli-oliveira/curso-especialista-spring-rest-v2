@@ -12,4 +12,6 @@ public interface RestaurantRepositoryQueries {
     List<Restaurant> dinamicFind(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate);
 
     List<Restaurant> findWithCriteria(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate);
+
+    List<Restaurant> findWithDinamicCriteria(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate);
 }
