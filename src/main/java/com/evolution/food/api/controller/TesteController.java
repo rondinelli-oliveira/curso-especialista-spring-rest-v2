@@ -110,4 +110,9 @@ public class TesteController {
     public List<Restaurant> findWithFreeFreightSpecs(String name) {
         return restaurantRepository.findAll(withFreeFreight().and(withSimilarName(name)));
     }
+
+    @GetMapping("/restaurantes/find-with-free-freight-v2")
+    public List<Restaurant> findWithFreeFreightV2(String name) {
+        return restaurantRepository.findWithFreeFreight(name);
+    }
 }

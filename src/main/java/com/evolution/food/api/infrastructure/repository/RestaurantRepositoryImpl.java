@@ -1,6 +1,7 @@
 package com.evolution.food.api.infrastructure.repository;
 
 import com.evolution.food.api.domain.model.Restaurant;
+import com.evolution.food.api.domain.repository.RestaurantRepository;
 import com.evolution.food.api.domain.repository.RestaurantRepositoryQueries;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -9,6 +10,8 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -17,11 +20,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.evolution.food.api.infrastructure.repository.spec.RestaurantSpecsFactory.withFreeFreight;
+import static com.evolution.food.api.infrastructure.repository.spec.RestaurantSpecsFactory.withSimilarName;
+
 @Repository
 public class RestaurantRepositoryImpl implements RestaurantRepositoryQueries {
 
     @PersistenceContext
     private EntityManager manager;
+
+    private final RestaurantRepository restaurantRepository;
+
+    @Lazy
+    public RestaurantRepositoryImpl(RestaurantRepository restaurantRepository) {
+        this.restaurantRepository = restaurantRepository;
+    }
+
 
     @Override
     public List<Restaurant> find(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate) {
@@ -111,6 +125,11 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryQueries {
 
         TypedQuery<Restaurant> query = manager.createQuery(criteriaQuery);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Restaurant> findWithFreeFreight(String name) {
+        return restaurantRepository.findAll(withFreeFreight().and(withSimilarName(name)));
     }
 
 }
