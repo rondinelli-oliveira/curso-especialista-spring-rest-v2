@@ -3,7 +3,9 @@ package com.evolution.food.api.controller;
 import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.KitchenRepository;
+import com.evolution.food.api.domain.repository.KitchenRepositoryV2;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
+import com.evolution.food.api.domain.repository.RestaurantRepositoryV2;
 import com.evolution.food.api.infrastructure.repository.spec.RestaurantWithFreeFreightSpec;
 import com.evolution.food.api.infrastructure.repository.spec.RestauranteWithSimilarNameSpec;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +24,15 @@ public class TesteController {
 
     private final RestaurantRepository restaurantRepository;
 
-    public TesteController(KitchenRepository kitchenRepository, RestaurantRepository restaurantRepository) {
+    private final RestaurantRepositoryV2 restaurantRepositoryV2;
+
+    private final KitchenRepositoryV2 kitchenRepositoryV2;
+
+    public TesteController(KitchenRepository kitchenRepository, RestaurantRepository restaurantRepository, RestaurantRepositoryV2 restaurantRepositoryV2, KitchenRepositoryV2 kitchenRepositoryV2) {
         this.kitchenRepository = kitchenRepository;
         this.restaurantRepository = restaurantRepository;
+        this.restaurantRepositoryV2 = restaurantRepositoryV2;
+        this.kitchenRepositoryV2 = kitchenRepositoryV2;
     }
 
     @GetMapping("/kitchens/all-by-name")
@@ -45,6 +53,11 @@ public class TesteController {
     @GetMapping("/kitchens/exists")
     public boolean existsByName(String name) {
         return kitchenRepository.existsByName(name);
+    }
+
+    @GetMapping("/kitchens/find-first-kitchen")
+    public Optional<Kitchen> findFirstKitchan() {
+        return kitchenRepositoryV2.findFirst();
     }
 
     @GetMapping("/restaurantes/by-freight-rate")
@@ -114,5 +127,10 @@ public class TesteController {
     @GetMapping("/restaurantes/find-with-free-freight-v2")
     public List<Restaurant> findWithFreeFreightV2(String name) {
         return restaurantRepository.findWithFreeFreight(name);
+    }
+
+    @GetMapping("/restaurantes/find-first-restaurant")
+    public Optional<Restaurant> findFirstRestaurant() {
+        return restaurantRepositoryV2.findFirst();
     }
 }
