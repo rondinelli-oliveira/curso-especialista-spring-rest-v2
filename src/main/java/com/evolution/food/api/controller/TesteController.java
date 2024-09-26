@@ -82,4 +82,9 @@ public class TesteController {
     public List<Restaurant> dinamicFind(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate) {
         return restaurantRepository.dinamicFind(name, initialFreightRate, finalFreightRate);
     }
+
+    @GetMapping("/restaurantes/find-with-criteria")
+    public List<Restaurant> findWithCriteria(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate) {
+        return restaurantRepository.findWithCriteria(name, initialFreightRate, finalFreightRate);
+    }
 }

@@ -5,6 +5,8 @@ import com.evolution.food.api.domain.repository.RestaurantRepositoryQueries;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -59,6 +61,18 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryQueries {
 
             return query.getResultList();
 
+    }
+
+    @Override
+    public List<Restaurant> findWithCriteria(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate) {
+
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+
+        CriteriaQuery<Restaurant> criteriaQuery = builder.createQuery(Restaurant.class);
+        criteriaQuery.from(Restaurant.class);
+
+        TypedQuery<Restaurant> query = manager.createQuery(criteriaQuery);
+        return query.getResultList();
     }
 
 }
