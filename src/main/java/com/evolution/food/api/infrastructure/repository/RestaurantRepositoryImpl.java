@@ -4,9 +4,11 @@ import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepositoryQueries;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 @Repository
@@ -25,6 +27,38 @@ public class RestaurantRepositoryImpl implements RestaurantRepositoryQueries {
                 .setParameter("initialFreightRate", initialFreightRate )
                 .setParameter("finalFreightRate", finalFreightRate)
                 .getResultList();
+    }
+
+    @Override
+    public List<Restaurant> dinamicFind(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate) {
+
+        var jpql = new StringBuilder();
+
+        var parameters = new HashMap<String, Object>();
+
+            jpql.append("from Restaurant where 0 = 0 ");
+
+            if (null != name) {
+                jpql.append("and name like :name ");
+                parameters.put("name", "%" + name + "%");
+            }
+
+            if (null != initialFreightRate) {
+                jpql.append("and freightRate >= :initialFreightRate ");
+                parameters.put("initialFreightRate", initialFreightRate);
+            }
+
+            if (null != finalFreightRate) {
+                jpql.append("and freightRate <= :finalFreightRate ");
+                parameters.put("finalFreightRate", finalFreightRate);
+            }
+
+        TypedQuery<Restaurant> query = manager.createQuery(jpql.toString(), Restaurant.class);
+//            parameters.forEach((key, value) -> query.setParameter(key, value));
+            parameters.forEach(query::setParameter);
+
+            return query.getResultList();
+
     }
 
 }
