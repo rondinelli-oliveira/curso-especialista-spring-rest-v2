@@ -4,13 +4,15 @@ import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
-import com.evolution.food.api.infrastructure.repository.spec.RestaurantWithFreFreightSpec;
+import com.evolution.food.api.infrastructure.repository.spec.RestaurantWithFreeFreightSpec;
 import com.evolution.food.api.infrastructure.repository.spec.RestauranteWithSimilarNameSpec;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+
+import static com.evolution.food.api.infrastructure.repository.spec.RestaurantSpecsFactory.*;
 
 @RestController
 @RequestMapping("/teste")
@@ -98,9 +100,14 @@ public class TesteController {
     @GetMapping("/restaurantes/find-with-free-freight")
     public List<Restaurant> findWithFreeFreight(String name) {
 
-        var withFreeFreight = new RestaurantWithFreFreightSpec();
+        var withFreeFreight = new RestaurantWithFreeFreightSpec();
         var withSimilarName = new RestauranteWithSimilarNameSpec(name);
 
         return restaurantRepository.findAll(withFreeFreight.and(withSimilarName));
+    }
+
+    @GetMapping("/restaurantes/find-with-free-freight-with-specs")
+    public List<Restaurant> findWithFreeFreightSpecs(String name) {
+        return restaurantRepository.findAll(withFreeFreight().and(withSimilarName(name)));
     }
 }

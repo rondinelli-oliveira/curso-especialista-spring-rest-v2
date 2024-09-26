@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 
-public class RestaurantWithFreFreightSpec implements Specification<Restaurant> {
+public class RestaurantWithFreeFreightSpec implements Specification<Restaurant> {
 
     @Override
     public Predicate toPredicate(Root<Restaurant> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
