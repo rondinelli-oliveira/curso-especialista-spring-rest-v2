@@ -4,6 +4,8 @@ import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
+import com.evolution.food.api.infrastructure.repository.spec.RestaurantWithFreFreightSpec;
+import com.evolution.food.api.infrastructure.repository.spec.RestauranteWithSimilarNameSpec;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -87,8 +89,18 @@ public class TesteController {
     public List<Restaurant> findWithCriteria(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate) {
         return restaurantRepository.findWithCriteria(name, initialFreightRate, finalFreightRate);
     }
+
     @GetMapping("/restaurantes/find-with-dinamic-criteria")
     public List<Restaurant> findWithDinamicCriteria(String name, BigDecimal initialFreightRate, BigDecimal finalFreightRate) {
         return restaurantRepository.findWithDinamicCriteria(name, initialFreightRate, finalFreightRate);
+    }
+
+    @GetMapping("/restaurantes/find-with-free-freight")
+    public List<Restaurant> findWithFreeFreight(String name) {
+
+        var withFreeFreight = new RestaurantWithFreFreightSpec();
+        var withSimilarName = new RestauranteWithSimilarNameSpec(name);
+
+        return restaurantRepository.findAll(withFreeFreight.and(withSimilarName));
     }
 }
