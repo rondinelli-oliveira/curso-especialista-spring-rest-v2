@@ -1,9 +1,13 @@
 package com.evolution.food.api.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonRootName("cozinha")
 @Data
@@ -18,5 +22,9 @@ public class Kitchen {
 
     @Column(nullable = false)
     private String name;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "kitchen")
+    List<Restaurant> restaurants = new ArrayList<>();
 
 }
