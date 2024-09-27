@@ -29,6 +29,9 @@ public class Restaurant {
     @JoinColumn(name = "kitchen_id", nullable = false)
     private Kitchen kitchen;
 
+    @Embedded
+    private Address address;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "restaurant_payment_methods",
