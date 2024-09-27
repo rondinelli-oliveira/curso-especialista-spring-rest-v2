@@ -75,7 +75,7 @@ public class RestaurantController {
                 log.info("Atualizando restaurante de codigo: {} e nome {}, para {}", currentRestaurant.getId(), currentRestaurant.getName(),
                         restaurant.getName());
                 BeanUtils.copyProperties(restaurant, currentRestaurant,
-                        "id", "paymentMethods", "address", "registrationDate");
+                        "id", "paymentMethods", "address", "registrationDate", "products");
                 restaurantService.save(currentRestaurant);
                 return ResponseEntity.ok(currentRestaurant);
             }
