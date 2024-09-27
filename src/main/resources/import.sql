@@ -21,3 +21,5 @@ insert into payment_method (id, description) values (3, 'Cash');
 
 insert into permission (id, name, description) values (1, 'LIST_KITCHEN', 'Allow consult kitchens');
 insert into permission (id, name, description) values (2, 'UPDATE_KITCHEN', 'Allow update kitchen');
+
+insert into restaurant_payment_methods (restaurant_id, payment_methods_id) values (1, 1), (1, 2), (1, 3), (2, 3), (3, 2), (3, 3);

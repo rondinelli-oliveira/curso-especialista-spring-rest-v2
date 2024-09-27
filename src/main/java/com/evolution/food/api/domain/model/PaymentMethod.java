@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
@@ -16,4 +19,7 @@ public class PaymentMethod {
 
     @Column(nullable = false)
     private String description;
+
+//    @ManyToMany
+//    private List<Restaurant> restaurants = new ArrayList<>();
 }
