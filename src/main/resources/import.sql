@@ -11,9 +11,9 @@ insert into city (id, name, state_id) values (3, 'São Paulo', 2);
 insert into city (id, name, state_id) values (4, 'Campinas', 2);
 insert into city (id, name, state_id) values (5, 'Fortaleza', 3);
 
-insert into restaurant (name, freigth_rate, kitchen_id, address_city_id, address_zip_code, address_street, address_number, address_district) values ('Thai Gourmet', 10, 1, 1, '38400-999', 'Rua João Pinheiro', 1000, 'Centro');
-insert into restaurant (name, freigth_rate, kitchen_id) values ('Thai Delivery', 9.50, 1);
-insert into restaurant (name, freigth_rate, kitchen_id) values ('Tuk Tuk Comida Indiana', 15, 2);
+insert into restaurant (name, freigth_rate, kitchen_id, registration_date, update_date, address_city_id, address_zip_code, address_street, address_number, address_district) values ('Thai Gourmet', 10, 1, utc_timestamp, utc_timestamp, 1, '38400-999', 'Rua João Pinheiro', 1000, 'Centro');
+insert into restaurant (name, freigth_rate, kitchen_id, registration_date, update_date) values ('Thai Delivery', 9.50, 1, utc_timestamp, utc_timestamp);
+insert into restaurant (name, freigth_rate, kitchen_id, registration_date, update_date) values ('Tuk Tuk Comida Indiana', 15, 2, utc_timestamp, utc_timestamp);
 
 insert into payment_method (id, description) values (1, 'Credit card');
 insert into payment_method (id, description) values (2, 'Debit card');
