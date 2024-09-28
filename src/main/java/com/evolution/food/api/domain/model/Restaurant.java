@@ -1,6 +1,7 @@
 package com.evolution.food.api.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,7 +29,9 @@ public class Restaurant {
     @Column(name = "freigth_rate", nullable = false)
     private BigDecimal freightRate;
 
-    @ManyToOne
+//    @JsonIgnoreProperties("hibernateLazyInitializer")
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "kitchen_id", nullable = false)
     private Kitchen kitchen;
 
