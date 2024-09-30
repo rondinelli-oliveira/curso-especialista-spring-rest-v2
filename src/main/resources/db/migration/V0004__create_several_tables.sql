@@ -39,11 +39,11 @@ primary key (id)) engine = InnoDB;
 create table restaurant_payment_methods (payment_methods_id bigint not null,
 restaurant_id bigint not null) engine = InnoDB;
 
-create table user (data_cadastro datetime not null,
+create table user (registration_date datetime not null,
 id bigint not null auto_increment,
 email varchar(255) not null,
-nome varchar(255) not null,
-senha varchar(255) not null,
+name varchar(255) not null,
+password varchar(255) not null,
 primary key (id)) engine = InnoDB;
 
 create table user_permission_groups (permission_groups_id bigint not null,

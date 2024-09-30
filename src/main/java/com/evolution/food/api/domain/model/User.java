@@ -20,17 +20,17 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String nome;
+    private String name;
     
     @Column(nullable = false)
     private String email;
     
     @Column(nullable = false)
-    private String senha;
+    private String password;
     
     @CreationTimestamp
     @Column(nullable = false, columnDefinition = "datetime")
-    private LocalDateTime dataCadastro;
+    private LocalDateTime registrationDate;
     
     @ManyToMany
     @JoinTable(name = "user_permission_groups", joinColumns = @JoinColumn(name = "user_id"),
