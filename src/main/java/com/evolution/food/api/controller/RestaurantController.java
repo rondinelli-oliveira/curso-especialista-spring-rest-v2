@@ -37,7 +37,7 @@ public class RestaurantController {
         for (Restaurant restaurant: restaurants) {
             log.info("O nome do restaurante de codigo: {} e {}", restaurant.getId(), restaurant.getName());
         }
-        return restaurantRepository.findAll();
+        return restaurants;
     }
 
     @GetMapping("/{id}")

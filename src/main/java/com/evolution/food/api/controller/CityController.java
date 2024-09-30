@@ -34,7 +34,7 @@ public class CityController {
         for (City city: cities) {
             log.info("O nome da cidade de codigo: {} e {}", city.getId(), city.getName());
         }
-        return cityRepository.findAll();
+        return cities;
     }
 
     @GetMapping("/{id}")

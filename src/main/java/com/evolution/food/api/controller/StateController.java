@@ -34,7 +34,7 @@ public class StateController {
         for (State state: states) {
             log.info("O nome do estado de codigo: {} e {}", state.getId(), state.getName());
         }
-        return stateRepository.findAll();
+        return states;
     }
 
     @GetMapping("/{id}")

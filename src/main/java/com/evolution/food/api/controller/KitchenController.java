@@ -34,7 +34,7 @@ public class KitchenController {
     	for(Kitchen kitchen: kitchens) {
             log.info("Nome da cozinha de codigo: {} e {}", kitchen.getId(), kitchen.getName());
     	}
-        return kitchenRepository.findAll();
+        return kitchens;
     }
 
     @GetMapping("/{id}")
