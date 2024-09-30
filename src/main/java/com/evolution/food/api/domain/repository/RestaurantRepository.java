@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface RestaurantRepository  extends JpaRepository<Restaurant, Long>, RestaurantRepositoryQueries,
         JpaSpecificationExecutor<Restaurant> {
 
-    @Query("from Restaurant r join fetch r.kitchen left join fetch r.paymentMethods")
+    @Query("from Restaurant r join fetch r.kitchen ")
     List<Restaurant> findAll();
 
     List<Restaurant> findByFreightRateBetween(BigDecimal initialFreightRate, BigDecimal finalFreightRate);
