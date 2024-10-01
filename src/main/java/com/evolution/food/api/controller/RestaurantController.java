@@ -1,5 +1,7 @@
 package com.evolution.food.api.controller;
 
+import com.evolution.food.api.domain.exception.BusinessException;
+import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
 import com.evolution.food.api.domain.service.RestaurantService;
@@ -71,7 +73,12 @@ public class RestaurantController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Restaurant add(@RequestBody Restaurant restaurant) {
-        return restaurantService.save(restaurant);
+        try {
+            return restaurantService.save(restaurant);
+        } catch (EntityNotFoundException exception) {
+            throw new BusinessException(exception.getMessage());
+        }
+
     }
 
 //    @PutMapping("/{id}")
@@ -102,7 +109,11 @@ public class RestaurantController {
         BeanUtils.copyProperties(restaurant, currentRestaurant,
                 "id", "paymentMethods", "address", "registrationDate", "products");
 
-        return restaurantService.save(currentRestaurant);
+        try {
+            return restaurantService.save(currentRestaurant);
+        } catch (EntityNotFoundException exception) {
+            throw new BusinessException(exception.getMessage());
+        }
     }
 
 //    @PatchMapping("/{id}")
