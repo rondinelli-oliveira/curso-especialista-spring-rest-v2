@@ -70,18 +70,25 @@ public class KitchenController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable Long id) {
-        try {
-            kitchenService.remove(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<?> remove(@PathVariable Long id) {
+//        try {
+//            kitchenService.remove(id);
+//            return ResponseEntity.noContent().build();
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//
+//        } catch (EntityInUseException e) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT)
+//                    .body(e.getMessage());
+//        }
+//    }
 
-        } catch (EntityInUseException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
-        }
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remove(@PathVariable Long id) {
+        kitchenService.remove(id);
+
     }
 
 }
