@@ -1,18 +1,14 @@
 package com.evolution.food.api.controller;
 
-import com.evolution.food.api.domain.exception.EntityInUseException;
-import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.State;
 import com.evolution.food.api.domain.repository.StateRepository;
 import com.evolution.food.api.domain.service.StateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/states")
@@ -37,17 +33,22 @@ public class StateController {
         return states;
     }
 
+//    @GetMapping("/{id}")
+//    public ResponseEntity<State> findById(@PathVariable Long id) {
+//        Optional<State> state = stateRepository.findById(id);
+//
+//        if (state.isPresent()) {
+//            log.info("Pesquisando estado com codigo: {}", id);
+//            log.info("Nome do estado  {}", state.get().getName());
+//            return ResponseEntity.ok(state.get());
+//        }
+//
+//        return ResponseEntity.notFound().build();
+//    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<State> findById(@PathVariable Long id) {
-        Optional<State> state = stateRepository.findById(id);
-
-        if (state.isPresent()) {
-            log.info("Pesquisando estado com codigo: {}", id);
-            log.info("Nome do estado  {}", state.get().getName());
-            return ResponseEntity.ok(state.get());
-        }
-
-        return ResponseEntity.notFound().build();
+    public State findById(@PathVariable Long id) {
+        return stateService.searchOrFail(id);
     }
 
     @PostMapping
@@ -56,33 +57,50 @@ public class StateController {
         return stateService.save(state);
     }
 
+//    @PutMapping("/{id}")
+//    public ResponseEntity<State> update(@PathVariable Long id, @RequestBody State state) {
+//        State currentState = stateRepository.findById(id).orElse(null);
+//
+//        if (null != currentState) {
+//            log.info("Atualizando estado de codigo: {} e nome {}, para {}", currentState.getId(), currentState.getName(),
+//                    state.getName());
+//            BeanUtils.copyProperties(state, currentState, "id");
+//            currentState = stateService.save(currentState);
+//            return ResponseEntity.ok().body(currentState);
+//        }
+//
+//        return ResponseEntity.notFound().build();
+//    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<State> update(@PathVariable Long id, @RequestBody State state) {
-        State currentState = stateRepository.findById(id).orElse(null);
+    public State update(@PathVariable Long id, @RequestBody State state) {
+        State currentState = stateService.searchOrFail(id);
 
-        if (null != currentState) {
-            log.info("Atualizando estado de codigo: {} e nome {}, para {}", currentState.getId(), currentState.getName(),
-                    state.getName());
-            BeanUtils.copyProperties(state, currentState, "id");
-            currentState = stateService.save(currentState);
-            return ResponseEntity.ok().body(currentState);
-        }
+        log.info("Atualizando estado de codigo: {} e nome {}, para {}", currentState.getId(), currentState.getName(),
+                state.getName());
+        BeanUtils.copyProperties(state, currentState, "id");
 
-        return ResponseEntity.notFound().build();
+        return stateService.save(currentState);
     }
 
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<?> remove(@PathVariable Long id) {
+//        try {
+//            stateService.remove(id);
+//            return ResponseEntity.noContent().build();
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.notFound().build();
+//
+//        } catch (EntityInUseException e) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT)
+//                    .body(e.getMessage());
+//        }
+//
+//    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable Long id) {
-        try {
-            stateService.remove(id);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-
-        } catch (EntityInUseException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
-        }
-
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remove(@PathVariable Long id) {
+        stateService.remove(id);
     }
 }

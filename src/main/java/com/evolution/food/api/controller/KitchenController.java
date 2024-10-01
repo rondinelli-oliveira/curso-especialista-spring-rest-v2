@@ -1,20 +1,14 @@
 package com.evolution.food.api.controller;
 
-import com.evolution.food.api.domain.exception.EntityInUseException;
-import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import com.evolution.food.api.domain.service.KitchenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.server.ServerWebInputException;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/kitchens")

@@ -4,18 +4,15 @@ import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
 import com.evolution.food.api.domain.service.RestaurantService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/restaurants")
@@ -40,59 +37,90 @@ public class RestaurantController {
         return restaurants;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> findById(@PathVariable Long id) {
-        Optional<Restaurant> restaurant = restaurantRepository.findById(id);
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Restaurant> findById(@PathVariable Long id) {
+//        Optional<Restaurant> restaurant = restaurantRepository.findById(id);
+//
+//        if (restaurant.isPresent()) {
+//            log.info("Pesquisando restaurante com codigo: {}", id);
+//            log.info("Nome do restaurante  {}", restaurant.get().getName());
+//            return ResponseEntity.ok(restaurant.get());
+//        }
+//        return ResponseEntity.notFound().build();
+//    }
 
-        if (restaurant.isPresent()) {
-            log.info("Pesquisando restaurante com codigo: {}", id);
-            log.info("Nome do restaurante  {}", restaurant.get().getName());
-            return ResponseEntity.ok(restaurant.get());
-        }
-        return ResponseEntity.notFound().build();
+    @GetMapping("/{id}")
+    public Restaurant findById(@PathVariable Long id) {
+        return restaurantService.searchOrFail(id);
     }
+
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public ResponseEntity<?> add(@RequestBody Restaurant restaurant) {
+//        try {
+//            restaurantService.save(restaurant);
+//            return  ResponseEntity.status(HttpStatus.CREATED)
+//                    .body(restaurant);
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.badRequest()
+//                    .body(e.getMessage());
+//        }
+//
+//    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> add(@RequestBody Restaurant restaurant) {
-        try {
-            restaurantService.save(restaurant);
-            return  ResponseEntity.status(HttpStatus.CREATED)
-                    .body(restaurant);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
-        }
-
+    public Restaurant add(@RequestBody Restaurant restaurant) {
+        return restaurantService.save(restaurant);
     }
+
+//    @PutMapping("/{id}")
+//    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
+//        try {
+//            Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
+//
+//            if (null != currentRestaurant) {
+//                log.info("Atualizando restaurante de codigo: {} e nome {}, para {}", currentRestaurant.getId(), currentRestaurant.getName(),
+//                        restaurant.getName());
+//                BeanUtils.copyProperties(restaurant, currentRestaurant,
+//                        "id", "paymentMethods", "address", "registrationDate", "products");
+//                restaurantService.save(currentRestaurant);
+//                return ResponseEntity.ok(currentRestaurant);
+//            }
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        } catch (EntityNotFoundException e) {
+//            return ResponseEntity.badRequest()
+//                    .body(e.getMessage());
+//        }
+//    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Restaurant restaurant) {
-        try {
-            Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
+    public Restaurant update(@PathVariable Long id,
+                             @RequestBody Restaurant restaurant) {
+        Restaurant currentRestaurant = restaurantService.searchOrFail(id);
 
-            if (null != currentRestaurant) {
-                log.info("Atualizando restaurante de codigo: {} e nome {}, para {}", currentRestaurant.getId(), currentRestaurant.getName(),
-                        restaurant.getName());
-                BeanUtils.copyProperties(restaurant, currentRestaurant,
-                        "id", "paymentMethods", "address", "registrationDate", "products");
-                restaurantService.save(currentRestaurant);
-                return ResponseEntity.ok(currentRestaurant);
-            }
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
-        }
+        BeanUtils.copyProperties(restaurant, currentRestaurant,
+                "id", "paymentMethods", "address", "registrationDate", "products");
+
+        return restaurantService.save(currentRestaurant);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> partialUpdate(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
-            Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<?> partialUpdate(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
+//            Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
+//
+//            if (null == currentRestaurant) {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//            }
+//
+//        merge(fields, currentRestaurant);
+//
+//        return update(id, currentRestaurant);
+//    }
 
-            if (null == currentRestaurant) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
+    @PatchMapping("/{id}")
+    public Restaurant partialUpdate(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
+        Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
 
         merge(fields, currentRestaurant);
 
@@ -114,4 +142,9 @@ public class RestaurantController {
         });
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remove(@PathVariable Long id) {
+        restaurantService.remove(id);
+    }
 }
