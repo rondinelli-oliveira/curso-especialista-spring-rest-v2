@@ -10,6 +10,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebInputException;
 
 import java.util.List;
 import java.util.Optional;
@@ -87,7 +89,13 @@ public class KitchenController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable Long id) {
-        kitchenService.remove(id);
+        try {
+            kitchenService.remove(id);
+        } catch (EntityNotFoundException exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());
+//            throw new ServerWebInputException(exception.getMessage());
+        }
+
 
     }
 
