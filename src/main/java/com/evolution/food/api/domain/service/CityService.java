@@ -5,7 +5,6 @@ import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.City;
 import com.evolution.food.api.domain.model.State;
 import com.evolution.food.api.domain.repository.CityRepository;
-import com.evolution.food.api.domain.repository.StateRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -20,11 +19,14 @@ public class CityService {
 
     private final CityRepository cityRepository;
 
-    private final StateRepository stateRepository;
+//    private final StateRepository stateRepository;
 
-    public CityService(CityRepository cityRepository, StateRepository stateRepository) {
+    private final StateService stateService;
+
+    public CityService(CityRepository cityRepository, /*StateRepository stateRepository,*/ StateService stateService) {
         this.cityRepository = cityRepository;
-        this.stateRepository = stateRepository;
+//        this.stateRepository = stateRepository;
+        this.stateService = stateService;
     }
 
 //    public City save(City city) {
@@ -42,9 +44,11 @@ public class CityService {
     public City save(City city) {
         log.info("Persistindo cidade de nome: {}", city.getName());
         Long stataId = city.getState().getId();
-        State state = stateRepository.findById(stataId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(MSG_STATE_NOT_FOUND, stataId)));
+        State state = stateService.searchOrFail(stataId);
+
+//        State state = stateRepository.findById(stataId)
+//                .orElseThrow(() -> new EntityNotFoundException(
+//                        String.format(MSG_STATE_NOT_FOUND, stataId)));
 
         city.setState(state);
 

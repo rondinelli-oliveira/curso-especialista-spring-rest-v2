@@ -4,7 +4,6 @@ import com.evolution.food.api.domain.exception.EntityInUseException;
 import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.Restaurant;
-import com.evolution.food.api.domain.repository.KitchenRepository;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,19 +18,25 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
 
-    private final KitchenRepository kitchenRepository;
+//    private final KitchenRepository kitchenRepository;
 
-    public RestaurantService(RestaurantRepository restaurantRepository, KitchenRepository kitchenRepository) {
+    private final KitchenService  kitchenService;
+
+    public RestaurantService(RestaurantRepository restaurantRepository, /*KitchenRepository kitchenRepository,*/ KitchenService kitchenService) {
         this.restaurantRepository = restaurantRepository;
-        this.kitchenRepository = kitchenRepository;
+        this.kitchenService = kitchenService;
+//        this.kitchenRepository = kitchenRepository;
     }
 
     public Restaurant save(Restaurant restaurant) {
         log.info("Persistindo restaurante de nome: {}", restaurant.getName());
         Long kitchenId = restaurant.getKitchen().getId();
-        Kitchen kitchen = kitchenRepository.findById(kitchenId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                    String.format("Nao existe cadastro de cozinha com codigo: %d ", kitchenId)));
+
+        Kitchen kitchen = kitchenService.searchOrFail(kitchenId);
+
+//        Kitchen kitchen = kitchenRepository.findById(kitchenId)
+//                .orElseThrow(() -> new EntityNotFoundException(
+//                    String.format("Nao existe cadastro de cozinha com codigo: %d ", kitchenId)));
 
         restaurant.setKitchen(kitchen);
         return restaurantRepository.save(restaurant);

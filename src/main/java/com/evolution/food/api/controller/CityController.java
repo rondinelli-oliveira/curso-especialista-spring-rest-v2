@@ -1,5 +1,7 @@
 package com.evolution.food.api.controller;
 
+import com.evolution.food.api.domain.exception.BusinessException;
+import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.City;
 import com.evolution.food.api.domain.repository.CityRepository;
 import com.evolution.food.api.domain.service.CityService;
@@ -66,7 +68,12 @@ public class CityController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public City add(@RequestBody City city) {
-        return cityService.save(city);
+        try {
+            return cityService.save(city);
+        } catch (EntityNotFoundException exception) {
+            throw new BusinessException(exception.getMessage());
+        }
+
     }
 
 //    @PutMapping("/{id}")
@@ -99,8 +106,11 @@ public class CityController {
         log.info("Atualizando cozinha de codigo: {} e nome {}, para {}", currentCity.getId(), currentCity.getName(),
                 city.getName());
         BeanUtils.copyProperties(city, currentCity, "id");
-
-        return cityService.save(currentCity);
+        try {
+            return cityService.save(currentCity);
+        } catch (EntityNotFoundException exception) {
+            throw new BusinessException(exception.getMessage());
+        }
     }
 
 //    @DeleteMapping("/{id}")
