@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KitchenService {
 
+    public static final String MSG_KITCHEN_NOT_FOUND = "Nao existe cadastro de cozinha com codigo: %d ";
+    public static final String MSG_KITCHEN_IN_USE = "Cozinha de codigo: %d nao pode ser removida, pois esta em uso";
+
     private final KitchenRepository kitchenRepository;
 
     public KitchenService(KitchenRepository kitchenRepository) {
@@ -28,13 +31,26 @@ public class KitchenService {
             log.info("Deletando cozinha de codigo: {}", id);
             if (!kitchenRepository.existsById(id)) {
                 throw new EntityNotFoundException(
-                        String.format("Nao existe cadastro de cozinha com codigo: %d ", id));
+                        String.format(MSG_KITCHEN_NOT_FOUND, id));
             }
             kitchenRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new EntityInUseException(
-                    String.format("Cozinha de codigo: %d nao pode ser removida, pois esta em uso", id));
+                    String.format(MSG_KITCHEN_IN_USE, id));
         }
 
+    }
+
+    public Kitchen searchOrFail(Long id) {
+
+        log.info("Pesquisando cozinha pelo codigo: {} ", id);
+
+        Kitchen kitchen = kitchenRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format(MSG_KITCHEN_NOT_FOUND, id)));
+
+        log.info("Nome da cozinha: {}", kitchen.getName());
+
+        return kitchen;
     }
 }
