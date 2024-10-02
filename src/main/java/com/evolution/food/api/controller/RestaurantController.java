@@ -1,7 +1,6 @@
 package com.evolution.food.api.controller;
 
 import com.evolution.food.api.domain.exception.BusinessException;
-import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.exception.KitchenNotFoundException;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepository;

@@ -1,15 +1,19 @@
 package com.evolution.food.api.controller;
 
 import com.evolution.food.api.domain.exception.BusinessException;
+import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.exception.StateNotFoundException;
 import com.evolution.food.api.domain.model.City;
 import com.evolution.food.api.domain.repository.CityRepository;
 import com.evolution.food.api.domain.service.CityService;
+import com.evolution.food.api.execeptionhandler.Problem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -133,5 +137,27 @@ public class CityController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable Long id) {
         cityService.remove(id);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException exception) {
+
+        Problem problem = Problem.builder()
+                .dateTime(LocalDateTime.now())
+                .massage(exception.getMessage()).build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(problem);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<?> handleBusinessException(BusinessException exception) {
+
+        Problem problem = Problem.builder()
+                .dateTime(LocalDateTime.now())
+                .massage(exception.getMessage()).build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(problem);
     }
 }
