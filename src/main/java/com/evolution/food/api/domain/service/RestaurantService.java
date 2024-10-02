@@ -1,7 +1,7 @@
 package com.evolution.food.api.domain.service;
 
 import com.evolution.food.api.domain.exception.EntityInUseException;
-import com.evolution.food.api.domain.exception.EntityNotFoundException;
+import com.evolution.food.api.domain.exception.RestaurantNotFoundException;
 import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
@@ -46,8 +46,7 @@ public class RestaurantService {
         try {
             log.info("Deletando restaurante de codigo: {}", id);
             if (!restaurantRepository.existsById(id)) {
-                throw new com.evolution.food.api.domain.exception.EntityNotFoundException(
-                        String.format(MSG_RESTAURANT_NOT_FOUND, id));
+                throw new RestaurantNotFoundException(id);
             }
             restaurantRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
@@ -61,8 +60,7 @@ public class RestaurantService {
         log.info("Pesquisando restaurante com codigo: {}", id);
 
         Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(MSG_RESTAURANT_NOT_FOUND, id)));
+                .orElseThrow(() -> new RestaurantNotFoundException(id));
 
         log.info("Nome do restaurante  {}", restaurant.getName());
 

@@ -2,6 +2,7 @@ package com.evolution.food.api.controller;
 
 import com.evolution.food.api.domain.exception.BusinessException;
 import com.evolution.food.api.domain.exception.EntityNotFoundException;
+import com.evolution.food.api.domain.exception.KitchenNotFoundException;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
 import com.evolution.food.api.domain.service.RestaurantService;
@@ -75,7 +76,7 @@ public class RestaurantController {
     public Restaurant add(@RequestBody Restaurant restaurant) {
         try {
             return restaurantService.save(restaurant);
-        } catch (EntityNotFoundException exception) {
+        } catch (KitchenNotFoundException exception) {
             throw new BusinessException(exception.getMessage());
         }
 
@@ -111,7 +112,7 @@ public class RestaurantController {
 
         try {
             return restaurantService.save(currentRestaurant);
-        } catch (EntityNotFoundException exception) {
+        } catch (KitchenNotFoundException exception) {
             throw new BusinessException(exception.getMessage());
         }
     }

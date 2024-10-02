@@ -1,7 +1,7 @@
 package com.evolution.food.api.domain.service;
 
+import com.evolution.food.api.domain.exception.CityNotFoundException;
 import com.evolution.food.api.domain.exception.EntityInUseException;
-import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import com.evolution.food.api.domain.model.City;
 import com.evolution.food.api.domain.model.State;
 import com.evolution.food.api.domain.repository.CityRepository;
@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CityService {
 
-    private static final String MSG_CITY_NOT_FOUND = "Não existe cadastro de cidade com código %d";
     public static final String MSG_CITY_IN_USE = "Cidade de codigo %d nao pode ser removida, pois esta em uso";
-    public static final String MSG_STATE_NOT_FOUND = "Não existe cadastro de estado com código %d";
 
     private final CityRepository cityRepository;
 
@@ -74,8 +72,7 @@ public class CityService {
         try {
             log.info("Deletando cidade de codigo: {}", id);
             if (!cityRepository.existsById(id)) {
-                throw new EntityNotFoundException(
-                        String.format(MSG_CITY_NOT_FOUND, id));
+                throw new CityNotFoundException(id);
             }
             cityRepository.deleteById(id);
 
@@ -90,8 +87,7 @@ public class CityService {
         log.info("Pesquisando cidade pelo codigo: {} ", id);
 
         City city = cityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(MSG_CITY_NOT_FOUND, id)));
+                .orElseThrow(() -> new CityNotFoundException(id));
 
         log.info("Nome da cidade: {}", city.getName());
 
