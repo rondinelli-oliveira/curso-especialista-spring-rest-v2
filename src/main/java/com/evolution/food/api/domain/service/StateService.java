@@ -1,7 +1,7 @@
 package com.evolution.food.api.domain.service;
 
 import com.evolution.food.api.domain.exception.EntityInUseException;
-import com.evolution.food.api.domain.exception.EntityNotFoundException;
+import com.evolution.food.api.domain.exception.StateNotFoundException;
 import com.evolution.food.api.domain.model.State;
 import com.evolution.food.api.domain.repository.StateRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class StateService {
 
-    public static final String MSG_STATE_NOT_FOUND = "Nao existe um cadastro de estado com o codigo: %d";
     public static final String MSG_STATE_IN_USE = "Estado de codigo %d nao pode ser removido, pois esta em uso";
     private final StateRepository stateRepository;
 
@@ -44,8 +43,7 @@ public class StateService {
         try {
             log.info("Deletando estado de codigo: {}", id);
             if (!stateRepository.existsById(id)) {
-                throw new EntityNotFoundException(
-                        String.format(MSG_STATE_NOT_FOUND, id));
+                throw new StateNotFoundException(id);
             }
             stateRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
@@ -60,8 +58,7 @@ public class StateService {
         log.info("Pesquisando cozinha pelo codigo: {} ", id);
 
         State state = stateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(MSG_STATE_NOT_FOUND, id)));
+                .orElseThrow(() -> new StateNotFoundException(id));
 
         log.info("Nome da state: {}", state.getName());
 

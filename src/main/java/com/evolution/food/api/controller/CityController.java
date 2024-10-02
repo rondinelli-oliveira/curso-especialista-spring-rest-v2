@@ -1,7 +1,7 @@
 package com.evolution.food.api.controller;
 
 import com.evolution.food.api.domain.exception.BusinessException;
-import com.evolution.food.api.domain.exception.EntityNotFoundException;
+import com.evolution.food.api.domain.exception.StateNotFoundException;
 import com.evolution.food.api.domain.model.City;
 import com.evolution.food.api.domain.repository.CityRepository;
 import com.evolution.food.api.domain.service.CityService;
@@ -70,8 +70,8 @@ public class CityController {
     public City add(@RequestBody City city) {
         try {
             return cityService.save(city);
-        } catch (EntityNotFoundException exception) {
-            throw new BusinessException(exception.getMessage());
+        } catch (StateNotFoundException exception) {
+            throw new BusinessException(exception.getMessage(), exception);
         }
 
     }
@@ -101,15 +101,17 @@ public class CityController {
 
     @PutMapping("/{id}")
     public City update(@PathVariable Long id, @RequestBody City city) {
-        City currentCity = cityService.searchOrFail(id);
-
-        log.info("Atualizando cozinha de codigo: {} e nome {}, para {}", currentCity.getId(), currentCity.getName(),
-                city.getName());
-        BeanUtils.copyProperties(city, currentCity, "id");
         try {
+            City currentCity = cityService.searchOrFail(id);
+
+            log.info("Atualizando cozinha de codigo: {} e nome {}, para {}", currentCity.getId(), currentCity.getName(),
+                    city.getName());
+
+            BeanUtils.copyProperties(city, currentCity, "id");
+
             return cityService.save(currentCity);
-        } catch (EntityNotFoundException exception) {
-            throw new BusinessException(exception.getMessage());
+        } catch (StateNotFoundException exception) {
+            throw new BusinessException(exception.getMessage(), exception);
         }
     }
 
