@@ -10,5 +10,5 @@ import java.time.LocalDateTime;
 public class Problem {
 
     private LocalDateTime dateTime;
-    private String massage;
+    private String message;
 }

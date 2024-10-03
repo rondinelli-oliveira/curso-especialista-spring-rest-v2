@@ -1,6 +1,7 @@
 package com.evolution.food.api.execeptionhandler;
 
 import com.evolution.food.api.domain.exception.BusinessException;
+import com.evolution.food.api.domain.exception.EntityInUseException;
 import com.evolution.food.api.domain.exception.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class ApiExceptionHandler {
 
         Problem problem = Problem.builder()
                 .dateTime(LocalDateTime.now())
-                .massage(exception.getMessage()).build();
+                .message(exception.getMessage()).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(problem);
@@ -29,7 +30,7 @@ public class ApiExceptionHandler {
 
         Problem problem = Problem.builder()
                 .dateTime(LocalDateTime.now())
-                .massage(exception.getMessage()).build();
+                .message(exception.getMessage()).build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(problem);
@@ -40,9 +41,20 @@ public class ApiExceptionHandler {
 
         Problem problem = Problem.builder()
                 .dateTime(LocalDateTime.now())
-                .massage("Tipo de midia nao suportado.").build();
+                .message("Tipo de midia nao suportado.").build();
 
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(problem);
+    }
+
+    @ExceptionHandler(EntityInUseException.class)
+    public ResponseEntity<?> handleEntityInUseException(EntityInUseException exception) {
+
+        Problem problem = Problem.builder()
+                .dateTime(LocalDateTime.now())
+                .message(exception.getMessage()).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(problem);
     }
 }
