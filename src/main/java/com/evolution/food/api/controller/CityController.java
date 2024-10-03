@@ -138,26 +138,4 @@ public class CityController {
     public void remove(@PathVariable Long id) {
         cityService.remove(id);
     }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException exception) {
-
-        Problem problem = Problem.builder()
-                .dateTime(LocalDateTime.now())
-                .massage(exception.getMessage()).build();
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(problem);
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<?> handleBusinessException(BusinessException exception) {
-
-        Problem problem = Problem.builder()
-                .dateTime(LocalDateTime.now())
-                .massage(exception.getMessage()).build();
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(problem);
-    }
 }
