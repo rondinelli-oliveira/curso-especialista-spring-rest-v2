@@ -14,21 +14,32 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDateTime;
-
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Object> handleEntidadeNaoEncontradaException(
+    public ResponseEntity<Object> handleEntityNotFoundException(
             EntityNotFoundException ex, WebRequest request) {
 
-        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(),
-                HttpStatus.NOT_FOUND, request);
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ProblemType problemType = ProblemType.ENTITY_NOT_FOUND;
+        String detail = ex.getMessage();
+
+        Problem problem = createProblemBuilder(status, problemType, detail).build();
+
+//        Problem problem = Problem.builder()
+//                .status(status.value())
+//                .type("https://evolutionfood.com.br/entity-not-found")
+//                .title("Entidade nao encontrada.")
+//                .detail(ex.getMessage())
+//                .build();
+
+        return handleExceptionInternal(ex, problem, new HttpHeaders(),
+                status, request);
     }
 
     @ExceptionHandler(EntityInUseException.class)
-    public ResponseEntity<Object> handleEntidadeEmUsoException(
+    public ResponseEntity<Object> handleEntityInUseException(
             EntityInUseException ex, WebRequest request) {
 
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(),
@@ -36,21 +47,21 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<Object> handleNegocioException(BusinessException ex, WebRequest request) {
+    public ResponseEntity<Object> handleBusinessException(BusinessException ex, WebRequest request) {
         return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(),
                 HttpStatus.BAD_REQUEST, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
-            HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+            HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
 
         // Customizando a mensagem de metodo nao suportado
         String customMessage = "O metodo de solicitacao 'PATCH' nao e compativel.";
 
         Problem problem = Problem.builder()
-                .dateTime(LocalDateTime.now())
-                .message(customMessage)
+                .status(statusCode.value())
+                .title(customMessage)
                 .build();
 
         return new ResponseEntity<>(problem, headers, HttpStatus.METHOD_NOT_ALLOWED);
@@ -58,14 +69,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
-            HttpMediaTypeNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+            HttpMediaTypeNotSupportedException ex, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
 
         // Customizando a mensagem de midia nao suportada
         String customMessage = "Tipo de midia nao suportado.";
 
         Problem problem = Problem.builder()
-                .dateTime(LocalDateTime.now())
-                .message(customMessage)
+                .status(statusCode.value())
+                .title(customMessage)
                 .build();
 
         return new ResponseEntity<>(problem, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
@@ -74,10 +85,25 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(
             Exception ex, Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
-        body = Problem.builder()
-                .dateTime(LocalDateTime.now())
-                .message(ex.getMessage()).build();
+
+        if (body == null) {
+            body = Problem.builder()
+                    .status(statusCode.value())
+                    .title(ex.getMessage())
+                    .build();
+        }
+
         return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+    }
+
+    private Problem.ProblemBuilder createProblemBuilder(HttpStatus status,
+                                                        ProblemType problemType, String detail) {
+
+        return Problem.builder()
+                .status(status.value())
+                .type(problemType.getPath())
+                .title(problemType.getTitle())
+                .detail(detail);
     }
 
 }
