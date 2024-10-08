@@ -3,7 +3,9 @@ package com.evolution.food.api.execeptionhandler;
 import com.evolution.food.api.domain.exception.BusinessException;
 import com.evolution.food.api.domain.exception.EntityInUseException;
 import com.evolution.food.api.domain.exception.EntityNotFoundException;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -30,7 +33,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         if(rootCause instanceof InvalidFormatException) {
             return handleInvalidFormatException((InvalidFormatException) ex.getRootCause(), headers, status, request);
+        } else if (rootCause instanceof PropertyBindingException) {
+            return handlePropertyBindingException((PropertyBindingException) rootCause, headers, (HttpStatus) status, request);
         }
+
         HttpStatus httpStatus = HttpStatus.valueOf(status.value());
         ProblemType problemType = ProblemType.INCOMPATIBLE_MESSAGE;
         String detail = "O corpo da requisicao esta invalido, verifique erro de sintaxe.";
@@ -39,12 +45,26 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, problem, headers, httpStatus, request);
     }
 
+    private ResponseEntity<Object> handlePropertyBindingException(PropertyBindingException ex,
+                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+        // Foi criado o método joinPath para reaproveitar em todos os metodos que precisam
+        // concatenar os nomes das propriedades (separando por ".")
+        String path = joinPath(ex.getPath());
+
+        ProblemType problemType = ProblemType.INCOMPATIBLE_MESSAGE;
+        String detail = String.format("A propriedade '%s' nao existe. "
+                + "Corrija ou remova essa propriedade e tente novamente.", path);
+
+        Problem problem = createProblemBuilder(status, problemType, detail).build();
+
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
     private ResponseEntity<Object> handleInvalidFormatException(
             InvalidFormatException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-        String path = ex.getPath().stream()
-                .map(reference -> reference.getFieldName())
-                .collect(Collectors.joining("."));
+        String path = joinPath(ex.getPath());
 
         ProblemType problemType = ProblemType.INCOMPATIBLE_MESSAGE;
         HttpStatus httpStatus = HttpStatus.valueOf(status.value());
@@ -157,6 +177,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .type(problemType.getPath())
                 .title(problemType.getTitle())
                 .detail(detail);
+    }
+
+    private String joinPath(List<Reference> references) {
+        return references.stream()
+                .map(ref -> ref.getFieldName())
+                .collect(Collectors.joining("."));
     }
 
 }
