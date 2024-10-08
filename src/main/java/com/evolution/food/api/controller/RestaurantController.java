@@ -5,10 +5,15 @@ import com.evolution.food.api.domain.exception.KitchenNotFoundException;
 import com.evolution.food.api.domain.model.Restaurant;
 import com.evolution.food.api.domain.repository.RestaurantRepository;
 import com.evolution.food.api.domain.service.RestaurantService;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -130,27 +135,38 @@ public class RestaurantController {
 //    }
 
     @PatchMapping("/{id}")
-    public Restaurant partialUpdate(@PathVariable Long id, @RequestBody Map<String, Object> fields) {
+    public Restaurant partialUpdate(@PathVariable Long id, @RequestBody Map<String, Object> fields, HttpServletRequest request) {
         Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
 
-        merge(fields, currentRestaurant);
+        merge(fields, currentRestaurant, request);
 
         return update(id, currentRestaurant);
     }
 
-    private static void merge(Map<String, Object> originFields, Restaurant destinationFields) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Restaurant originRestaurant = objectMapper.convertValue(originFields, Restaurant.class);
+    private static void merge(Map<String, Object> originFields, Restaurant destinationFields, HttpServletRequest request) {
 
-        originFields.forEach((attributeName, attributeValue)-> {
+        ServletServerHttpRequest serverHttpRequest = new ServletServerHttpRequest(request);
 
-            Field field = ReflectionUtils.findField(Restaurant.class, attributeName);
-            field.setAccessible(true);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, true);
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
-            Object newValue = ReflectionUtils.getField(field, originRestaurant);
+            Restaurant originRestaurant = objectMapper.convertValue(originFields, Restaurant.class);
 
-            ReflectionUtils.setField(field, destinationFields, newValue);
-        });
+            originFields.forEach((attributeName, attributeValue)-> {
+
+                Field field = ReflectionUtils.findField(Restaurant.class, attributeName);
+                field.setAccessible(true);
+
+                Object newValue = ReflectionUtils.getField(field, originRestaurant);
+
+                ReflectionUtils.setField(field, destinationFields, newValue);
+            });
+        }catch (IllegalArgumentException ex){
+            Throwable rootCause = ExceptionUtils.getRootCause(ex);
+            throw new HttpMessageNotReadableException(ex.getMessage(), rootCause, serverHttpRequest);
+        }
     }
 
     @DeleteMapping("/{id}")
