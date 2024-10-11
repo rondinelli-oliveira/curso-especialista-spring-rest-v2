@@ -9,7 +9,8 @@ public enum ProblemType {
     ENTITY_IN_USE("Entity in use.", "/entity-in-use"),
     BUSINESS_ERROR("Business rule violation.", "/business-error"),
     INCOMPATIBLE_MESSAGE("Incompatible message.", "/incompatible-message"),
-    INVALID_PARAMETER("Invalid parameter", "/invalid-parameter");
+    INVALID_PARAMETER("Invalid parameter", "/invalid-parameter"),
+    SYSTEM_ERROR("System error", "/system-error");
 
     private String title;
     private String path;
