@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +48,19 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                         + "que é um tipo inválido. Corrija e informe um valor compatível com o tipo %s.",
                 ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
         Problem problem = createProblemBuilder(status, problemType, detail).build();
+        return handleExceptionInternal(ex, problem, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(NoResourceFoundException ex, HttpHeaders headers,
+                                                                    HttpStatusCode status, WebRequest request) {
+
+        HttpStatus httpStatus = HttpStatus.valueOf(status.value());
+        ProblemType problemType = ProblemType.RESOURCE_NOT_FOUND;
+        String detail = String.format(
+                "O recurso %s, que você tentou acessar, é inexistente.",
+                ex.getResourcePath());
+        Problem problem = createProblemBuilder(httpStatus, problemType, detail).build();
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
 
@@ -106,7 +121,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             EntityNotFoundException ex, WebRequest request) {
 
         HttpStatus status = HttpStatus.NOT_FOUND;
-        ProblemType problemType = ProblemType.ENTITY_NOT_FOUND;
+        ProblemType problemType = ProblemType.RESOURCE_NOT_FOUND;
         String detail = ex.getMessage();
 
         Problem problem = createProblemBuilder(status, problemType, detail).build();
