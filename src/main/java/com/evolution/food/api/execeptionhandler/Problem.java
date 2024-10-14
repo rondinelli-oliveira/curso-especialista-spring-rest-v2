@@ -12,10 +12,11 @@ import java.time.LocalDateTime;
 public class Problem {
 
     private Integer status;
+    private LocalDateTime timestamp;
     private String type;
     private String title;
     private String detail;
 
     private String userMessage;
-    private LocalDateTime timestamp;
+
 }
