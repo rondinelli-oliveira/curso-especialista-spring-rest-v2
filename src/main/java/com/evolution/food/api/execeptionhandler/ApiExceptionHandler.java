@@ -22,6 +22,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 "O parâmetro de URL '%s' recebeu o valor '%s', "
                         + "que é um tipo inválido. Corrija e informe um valor compatível com o tipo %s.",
                 ex.getName(), ex.getValue(), ex.getRequiredType().getSimpleName());
-        Problem problem = createProblemBuilder(status, problemType, detail).build();
+        Problem problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(MSG_GENERIC_ERROR)
+                .build();
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
 
@@ -63,7 +66,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         String detail = String.format(
                 "O recurso %s, que você tentou acessar, é inexistente.",
                 ex.getResourcePath());
-        Problem problem = createProblemBuilder(httpStatus, problemType, detail).build();
+        Problem problem = createProblemBuilder(httpStatus, problemType, detail)
+                .userMessage(MSG_GENERIC_ERROR)
+                .build();
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
 
@@ -83,7 +88,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType problemType = ProblemType.INCOMPATIBLE_MESSAGE;
         String detail = "O corpo da requisicao esta invalido, verifique erro de sintaxe.";
 
-        Problem problem = createProblemBuilder(httpStatus, problemType, detail).build();
+        Problem problem = createProblemBuilder(httpStatus, problemType, detail)
+                .userMessage(MSG_GENERIC_ERROR)
+                .build();
         return handleExceptionInternal(ex, problem, headers, httpStatus, request);
     }
 
@@ -131,14 +138,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType problemType = ProblemType.RESOURCE_NOT_FOUND;
         String detail = ex.getMessage();
 
-        Problem problem = createProblemBuilder(status, problemType, detail).build();
+        Problem problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(detail)
+                .build();
 
-//        Problem problem = Problem.builder()
-//                .status(status.value())
-//                .type("https://evolutionfood.com.br/entity-not-found")
-//                .title("Entidade nao encontrada.")
-//                .detail(ex.getMessage())
-//                .build();
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(),
                 status, request);
@@ -167,7 +170,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         ProblemType problemType = ProblemType.BUSINESS_ERROR;
         String detail = ex.getMessage();
 
-        Problem problem = createProblemBuilder(status, problemType, detail).build();
+        Problem problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(detail)
+                .build();
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(),
                 status, request);
@@ -186,7 +191,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         // para você durante, especialmente na fase de desenvolvimento
         ex.printStackTrace();
 
-        Problem problem = createProblemBuilder(status, problemType, detail).build();
+        Problem problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(MSG_GENERIC_ERROR)
+                .build();
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(),
                 status, request);
@@ -228,8 +235,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         if (body == null) {
             body = Problem.builder()
+                    .timestamp(LocalDateTime.now())
                     .status(statusCode.value())
                     .title(ex.getMessage())
+                    .userMessage(MSG_GENERIC_ERROR)
                     .build();
         }
 
@@ -240,6 +249,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                                                         ProblemType problemType, String detail) {
 
         return Problem.builder()
+                .timestamp(LocalDateTime.now())
                 .status(status.value())
                 .type(problemType.getPath())
                 .title(problemType.getTitle())
@@ -248,134 +258,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private String joinPath(List<Reference> references) {
         return references.stream()
-                .map(ref -> ref.getFieldName())
+                .map(Reference::getFieldName)
                 .collect(Collectors.joining("."));
     }
 
 }
-
-
-//package com.evolution.food.api.execeptionhandler;
-//
-//import com.evolution.food.api.domain.exception.BusinessException;
-//import com.evolution.food.api.domain.exception.EntityInUseException;
-//import com.evolution.food.api.domain.exception.EntityNotFoundException;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.HttpMediaTypeNotSupportedException;
-//import org.springframework.web.bind.annotation.ControllerAdvice;
-//import org.springframework.web.bind.annotation.ExceptionHandler;
-//
-//import java.time.LocalDateTime;
-//
-//@ControllerAdvice
-//public class ApiExceptionHandler {
-//
-//    @ExceptionHandler(EntityNotFoundException.class)
-//    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException exception) {
-//
-//        Problem problem = Problem.builder()
-//                .dateTime(LocalDateTime.now())
-//                .message(exception.getMessage()).build();
-//
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                .body(problem);
-//    }
-//
-//    @ExceptionHandler(BusinessException.class)
-//    public ResponseEntity<?> handleBusinessException(BusinessException exception) {
-//
-//        Problem problem = Problem.builder()
-//                .dateTime(LocalDateTime.now())
-//                .message(exception.getMessage()).build();
-//
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                .body(problem);
-//    }
-//
-//    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-//    public ResponseEntity<?> handleHttpMediaTypeNotSupportedException() {
-//
-//        Problem problem = Problem.builder()
-//                .dateTime(LocalDateTime.now())
-//                .message("Tipo de midia nao suportado.").build();
-//
-//        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-//                .body(problem);
-//    }
-//
-//    @ExceptionHandler(EntityInUseException.class)
-//    public ResponseEntity<?> handleEntityInUseException(EntityInUseException exception) {
-//
-//        Problem problem = Problem.builder()
-//                .dateTime(LocalDateTime.now())
-//                .message(exception.getMessage()).build();
-//
-//        return ResponseEntity.status(HttpStatus.CONFLICT)
-//                .body(problem);
-//    }
-//}
-
-
-//VERSAO DO CURSO
-//package com.algaworks.algafood.api.exceptionhandler;
-//
-//import java.time.LocalDateTime;
-//
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.ControllerAdvice;
-//import org.springframework.web.bind.annotation.ExceptionHandler;
-//import org.springframework.web.context.request.WebRequest;
-//import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-//
-//import com.algaworks.algafood.domain.exception.EntidadeEmUsoException;
-//import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
-//import com.algaworks.algafood.domain.exception.NegocioException;
-//
-//@ControllerAdvice
-//public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
-//
-//    @ExceptionHandler(EntidadeNaoEncontradaException.class)
-//    public ResponseEntity<?> tratarEntidadeNaoEncontradaException(
-//            EntidadeNaoEncontradaException ex, WebRequest request) {
-//
-//        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(),
-//                HttpStatus.NOT_FOUND, request);
-//    }
-//
-//    @ExceptionHandler(EntidadeEmUsoException.class)
-//    public ResponseEntity<?> tratarEntidadeEmUsoException(
-//            EntidadeEmUsoException ex, WebRequest request) {
-//
-//        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(),
-//                HttpStatus.CONFLICT, request);
-//    }
-//
-//    @ExceptionHandler(NegocioException.class)
-//    public ResponseEntity<?> tratarNegocioException(NegocioException ex, WebRequest request) {
-//        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(),
-//                HttpStatus.BAD_REQUEST, request);
-//    }
-//
-//    @Override
-//    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
-//                                                             HttpStatus status, WebRequest request) {
-//
-//        if (body == null) {
-//            body = Problema.builder()
-//                    .dataHora(LocalDateTime.now())
-//                    .mensagem(status.getReasonPhrase())
-//                    .build();
-//        } else if (body instanceof String) {
-//            body = Problema.builder()
-//                    .dataHora(LocalDateTime.now())
-//                    .mensagem((String) body)
-//                    .build();
-//        }
-//
-//        return super.handleExceptionInternal(ex, body, headers, status, request);
-//    }
-//
-//}
