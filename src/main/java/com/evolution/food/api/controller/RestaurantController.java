@@ -8,6 +8,7 @@ import com.evolution.food.api.domain.service.RestaurantService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
@@ -77,7 +78,7 @@ public class RestaurantController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Restaurant add(@RequestBody Restaurant restaurant) {
+    public Restaurant add(@RequestBody @Valid Restaurant restaurant) {
         try {
             return restaurantService.save(restaurant);
         } catch (KitchenNotFoundException exception) {
