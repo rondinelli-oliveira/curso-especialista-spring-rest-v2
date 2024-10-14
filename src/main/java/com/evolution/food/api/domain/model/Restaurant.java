@@ -3,6 +3,7 @@ package com.evolution.food.api.domain.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,6 +38,8 @@ public class Restaurant {
 
 //    @JsonIgnoreProperties("hibernateLazyInitializer")
 //    @JsonIgnore
+    @Valid
+    @NotNull
     @ManyToOne //(fetch = FetchType.LAZY)
     @JoinColumn(name = "kitchen_id", nullable = false)
     private Kitchen kitchen;
