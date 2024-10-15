@@ -2,10 +2,11 @@ package com.evolution.food.api.domain.model;
 
 import com.evolution.food.api.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import jakarta.validation.groups.ConvertGroup;
+import jakarta.validation.groups.Default;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,19 +29,20 @@ public class Restaurant {
 
 //    @NotNull
 //    @NotEmpty
-    @NotBlank(groups = Groups.RestaurantRegister.class)
+    @NotBlank
     @Column(nullable = false)
     private String name;
 
 //    @DecimalMin("0")
-    @PositiveOrZero(groups = Groups.RestaurantRegister.class)
+    @PositiveOrZero
     @Column(name = "freigth_rate", nullable = false)
     private BigDecimal freightRate;
 
 //    @JsonIgnoreProperties("hibernateLazyInitializer")
 //    @JsonIgnore
     @Valid
-    @NotNull(groups = Groups.RestaurantRegister.class)
+    @ConvertGroup(from = Default.class, to = Groups.KitchenId.class)
+    @NotNull
     @ManyToOne //(fetch = FetchType.LAZY)
     @JoinColumn(name = "kitchen_id", nullable = false)
     private Kitchen kitchen;
