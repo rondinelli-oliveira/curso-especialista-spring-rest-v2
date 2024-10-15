@@ -1,5 +1,6 @@
 package com.evolution.food.api.domain.model;
 
+import com.evolution.food.api.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -27,19 +28,19 @@ public class Restaurant {
 
 //    @NotNull
 //    @NotEmpty
-    @NotBlank
+    @NotBlank(groups = Groups.RestaurantRegister.class)
     @Column(nullable = false)
     private String name;
 
 //    @DecimalMin("0")
-    @PositiveOrZero
+    @PositiveOrZero(groups = Groups.RestaurantRegister.class)
     @Column(name = "freigth_rate", nullable = false)
     private BigDecimal freightRate;
 
 //    @JsonIgnoreProperties("hibernateLazyInitializer")
 //    @JsonIgnore
     @Valid
-    @NotNull
+    @NotNull(groups = Groups.RestaurantRegister.class)
     @ManyToOne //(fetch = FetchType.LAZY)
     @JoinColumn(name = "kitchen_id", nullable = false)
     private Kitchen kitchen;

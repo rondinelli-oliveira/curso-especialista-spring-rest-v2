@@ -1,5 +1,6 @@
 package com.evolution.food.api.controller;
 
+import com.evolution.food.api.Groups;
 import com.evolution.food.api.domain.exception.BusinessException;
 import com.evolution.food.api.domain.exception.KitchenNotFoundException;
 import com.evolution.food.api.domain.model.Restaurant;
@@ -8,7 +9,6 @@ import com.evolution.food.api.domain.service.RestaurantService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
@@ -78,7 +79,7 @@ public class RestaurantController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Restaurant add(@RequestBody @Valid Restaurant restaurant) {
+    public Restaurant add(@RequestBody @Validated(Groups.RestaurantRegister.class) Restaurant restaurant) {
         try {
             return restaurantService.save(restaurant);
         } catch (KitchenNotFoundException exception) {

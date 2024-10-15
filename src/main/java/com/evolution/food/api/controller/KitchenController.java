@@ -3,6 +3,7 @@ package com.evolution.food.api.controller;
 import com.evolution.food.api.domain.model.Kitchen;
 import com.evolution.food.api.domain.repository.KitchenRepository;
 import com.evolution.food.api.domain.service.KitchenService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -73,7 +74,7 @@ public class KitchenController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Kitchen add(@RequestBody Kitchen kitchen) {
+    public Kitchen add(@RequestBody @Valid Kitchen kitchen) {
         return kitchenService.save(kitchen);
     }
 
