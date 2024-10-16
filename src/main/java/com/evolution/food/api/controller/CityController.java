@@ -7,6 +7,7 @@ import com.evolution.food.api.domain.model.City;
 import com.evolution.food.api.domain.repository.CityRepository;
 import com.evolution.food.api.domain.service.CityService;
 import com.evolution.food.api.execeptionhandler.Problem;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -71,7 +72,7 @@ public class CityController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public City add(@RequestBody City city) {
+    public City add(@RequestBody @Valid City city) {
         try {
             return cityService.save(city);
         } catch (StateNotFoundException exception) {
@@ -104,7 +105,7 @@ public class CityController {
 //    }
 
     @PutMapping("/{id}")
-    public City update(@PathVariable Long id, @RequestBody City city) {
+    public City update(@PathVariable Long id, @Valid @RequestBody City city) {
         try {
             City currentCity = cityService.searchOrFail(id);
 

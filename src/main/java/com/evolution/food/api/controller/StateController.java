@@ -3,6 +3,7 @@ package com.evolution.food.api.controller;
 import com.evolution.food.api.domain.model.State;
 import com.evolution.food.api.domain.repository.StateRepository;
 import com.evolution.food.api.domain.service.StateService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -53,7 +54,7 @@ public class StateController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public State add(@RequestBody State state) {
+    public State add(@RequestBody @Valid State state) {
         return stateService.save(state);
     }
 
@@ -73,7 +74,7 @@ public class StateController {
 //    }
 
     @PutMapping("/{id}")
-    public State update(@PathVariable Long id, @RequestBody State state) {
+    public State update(@PathVariable Long id, @RequestBody @Valid State state) {
         State currentState = stateService.searchOrFail(id);
 
         log.info("Atualizando estado de codigo: {} e nome {}, para {}", currentState.getId(), currentState.getName(),
