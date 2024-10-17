@@ -35,7 +35,7 @@ public class Restaurant {
 
 //    @DecimalMin("0")
     @NotNull
-    @PositiveOrZero
+    @PositiveOrZero(message = "{FreightRate.invalid}")
     @Column(name = "freigth_rate", nullable = false)
     private BigDecimal freightRate;
 
