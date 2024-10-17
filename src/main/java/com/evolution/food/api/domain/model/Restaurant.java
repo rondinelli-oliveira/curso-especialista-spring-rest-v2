@@ -29,7 +29,7 @@ public class Restaurant {
 
 //    @NotNull
 //    @NotEmpty
-    @NotBlank
+    @NotBlank(message = " Nome e obrigatorio.")
     @Column(nullable = false)
     private String name;
 
