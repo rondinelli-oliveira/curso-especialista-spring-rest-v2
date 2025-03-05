@@ -1,6 +1,6 @@
 package com.evolution.food.api.domain.model;
 
-import com.evolution.food.api.Groups;
+import com.evolution.food.api.core.validation.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
