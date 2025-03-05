@@ -1,5 +1,6 @@
 package com.evolution.food.api.domain.model;
 
+import com.evolution.food.api.core.validation.FreightRate;
 import com.evolution.food.api.core.validation.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -35,7 +36,8 @@ public class Restaurant {
 
 //    @DecimalMin("0")
     @NotNull
-    @PositiveOrZero(message = "{FreightRate.invalid}")
+//    @PositiveOrZero(message = "{FreightRate.invalid}")
+    @FreightRate
     @Column(name = "freigth_rate", nullable = false)
     private BigDecimal freightRate;
 
