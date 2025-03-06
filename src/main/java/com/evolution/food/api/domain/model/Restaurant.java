@@ -3,6 +3,7 @@ package com.evolution.food.api.domain.model;
 import com.evolution.food.api.core.validation.FreightRate;
 import com.evolution.food.api.core.validation.Groups;
 import com.evolution.food.api.core.validation.Multiple;
+import com.evolution.food.api.core.validation.ValueZeroIncludeDescription;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -19,6 +20,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@ValueZeroIncludeDescription(valueField = "freightRate",
+        descriptionField = "name",
+        requiredDescription = "Free Freight Rate")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
