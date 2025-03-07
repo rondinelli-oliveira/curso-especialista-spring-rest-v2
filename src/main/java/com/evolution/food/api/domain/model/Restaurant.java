@@ -41,7 +41,7 @@ public class Restaurant {
 
 //    @DecimalMin("0")
     @NotNull
-//    @PositiveOrZero(message = "{FreightRate.invalid}")
+    @PositiveOrZero(message = "{FreightRate.invalid}")
 //    @FreightRate
     @Multiple(number = 5)
     @Column(name = "freigth_rate", nullable = false)

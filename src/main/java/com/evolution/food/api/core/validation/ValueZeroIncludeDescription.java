@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = {ValueZeroIncludeDescriptionValidator.class })
 public @interface ValueZeroIncludeDescription {
 
-    String message() default "{descricao obrigatoria invalida}";
+    String message() default "descricao obrigatoria invalida";
 
     Class<?>[] groups() default { };
 
