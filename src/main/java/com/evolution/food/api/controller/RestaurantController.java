@@ -1,5 +1,6 @@
 package com.evolution.food.api.controller;
 
+import com.evolution.food.api.core.validation.ValidateException;
 import com.evolution.food.api.domain.exception.BusinessException;
 import com.evolution.food.api.domain.exception.KitchenNotFoundException;
 import com.evolution.food.api.domain.model.Restaurant;
@@ -9,8 +10,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.ValidationException;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
@@ -29,7 +28,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/restaurants")
 @Slf4j
-@AllArgsConstructor
 public class RestaurantController {
 
     private final RestaurantRepository restaurantRepository;
@@ -38,12 +36,12 @@ public class RestaurantController {
     
     private final SmartValidator smartValidator;
 
-//    public RestaurantController(RestaurantRepository restaurantRepository, RestaurantService restaurantService,
-//                                SmartValidator smartValidator) {
-//        this.restaurantRepository = restaurantRepository;
-//        this.restaurantService = restaurantService;
-//        this.smartValidator = smartValidator;
-//    }
+    public RestaurantController(RestaurantRepository restaurantRepository, RestaurantService restaurantService,
+                                SmartValidator smartValidator) {
+        this.restaurantRepository = restaurantRepository;
+        this.restaurantService = restaurantService;
+        this.smartValidator = smartValidator;
+    }
 
     @GetMapping
     public List<Restaurant> findAll() {
@@ -160,7 +158,7 @@ public class RestaurantController {
         smartValidator.validate(currentRestaurant, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            throw new ValidationException(String.valueOf(bindingResult));
+            throw new ValidateException(bindingResult);
         }
     }
 

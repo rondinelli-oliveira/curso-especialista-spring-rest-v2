@@ -1,5 +1,6 @@
 package com.evolution.food.api.execeptionhandler;
 
+import com.evolution.food.api.core.validation.ValidateException;
 import com.evolution.food.api.domain.exception.BusinessException;
 import com.evolution.food.api.domain.exception.EntityInUseException;
 import com.evolution.food.api.domain.exception.EntityNotFoundException;
@@ -8,7 +9,6 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -45,15 +45,26 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         this.messageSource = messageSource;
     }
 
+    @ExceptionHandler({ ValidateException.class })
+    public ResponseEntity<Object> handleValidacaoException(ValidateException ex, WebRequest request) {
+        return handleValidationInternal(ex, ex.getBindingResult(), new HttpHeaders(),
+                HttpStatus.BAD_REQUEST, request);
+    }
+
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers,
-                                                                  HttpStatusCode status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        return handleValidationInternal(ex, ex.getBindingResult(), headers, status, request);
+    }
+
+    private ResponseEntity<Object> handleValidationInternal(Exception ex, BindingResult bindingResult, HttpHeaders headers,
+                                                            HttpStatusCode status, WebRequest request) {
+
         HttpStatus httpStatus = HttpStatus.valueOf(status.value());
         ProblemType problemType = ProblemType.INVALID_DATA;
         String detail = "Um ou mais campos estao invalidos. "
                 + "Faca o preencimento correto e tente novamente.";
 
-        BindingResult bindingResult = ex.getBindingResult();
 
         List<Problem.Object> problemObjects = bindingResult.getAllErrors().stream()
                 .map(objectError -> {
@@ -76,6 +87,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .userMessage(detail)
                 .objects(problemObjects)
                 .build();
+
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
 
