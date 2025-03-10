@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
@@ -25,16 +29,21 @@ import java.util.Map;
 @RestController
 @RequestMapping("/restaurants")
 @Slf4j
+@AllArgsConstructor
 public class RestaurantController {
 
     private final RestaurantRepository restaurantRepository;
 
     private final RestaurantService restaurantService;
+    
+    private final SmartValidator smartValidator;
 
-    public RestaurantController(RestaurantRepository restaurantRepository, RestaurantService restaurantService) {
-        this.restaurantRepository = restaurantRepository;
-        this.restaurantService = restaurantService;
-    }
+//    public RestaurantController(RestaurantRepository restaurantRepository, RestaurantService restaurantService,
+//                                SmartValidator smartValidator) {
+//        this.restaurantRepository = restaurantRepository;
+//        this.restaurantService = restaurantService;
+//        this.smartValidator = smartValidator;
+//    }
 
     @GetMapping
     public List<Restaurant> findAll() {
@@ -140,8 +149,19 @@ public class RestaurantController {
         Restaurant currentRestaurant = restaurantRepository.findById(id).orElse(null);
 
         merge(fields, currentRestaurant, request);
+        validate(currentRestaurant, "restaurant");
 
         return update(id, currentRestaurant);
+    }
+
+    private void validate(Restaurant currentRestaurant, String objectName) {
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(currentRestaurant, objectName);
+
+        smartValidator.validate(currentRestaurant, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException(String.valueOf(bindingResult));
+        }
     }
 
     private static void merge(Map<String, Object> originFields, Restaurant destinationFields, HttpServletRequest request) {
